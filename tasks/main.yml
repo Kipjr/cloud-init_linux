@@ -1,5 +1,6 @@
 ---
 - name: Install roles and collections
+  when: ansible_connection == 'local'
   community.general.ansible_galaxy_install:
     type: both
     requirements_file: ./collections/requirements.yml

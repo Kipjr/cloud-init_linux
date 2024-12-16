@@ -2,5 +2,8 @@
 
 - name: Ubuntu Installer
   hosts: all
+  gather_facts: true
+  environment:
+    PATH: /home/{{ ansible_user }}/.local/bin:{{ ansible_env.PATH }}
   roles:
       - role: "{{ playbook_dir }}"
