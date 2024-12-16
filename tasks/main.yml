@@ -5,17 +5,10 @@
     type: both
     requirements_file: ./collections/requirements.yml
 
- - name: Dump gathered facts
-   hosts: "{{ ansible_hostname |default('localhost') }}"
-   tasks:
-   - name: Facts
-     setup:
-   - name: Dump
-     delegate_to: localhost
-     run_once: true
-     copy:
-       content: "{{ hostvars[inventory_hostname] | to_nice_json }}"
-       dest: /tmp/ansible-facts-dump.json
+- name: Write gathered facts to a file
+  ansible.builtin.copy:
+    content: "{{ ansible_facts | to_nice_json }}"
+    dest: "/tmp/ansible_facts_{{ inventory_hostname }}.json"
 
 - name: Packages
   ansible.builtin.import_tasks: packages/main.yml
