@@ -4,6 +4,6 @@
   hosts: all
   gather_facts: true
   environment:
-    PATH: /home/{{ ansible_user }}/.local/bin:{{ ansible_env.PATH }}
+    PATH: /home/{{ ansible_env.USER }}/.local/bin:{{ ansible_env.PATH }}
   roles:
       - role: "{{ playbook_dir }}"
