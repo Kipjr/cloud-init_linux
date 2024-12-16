@@ -70,8 +70,6 @@
 
 - name: Install Docker (rootless, using systemd)
   when: not file_check_docker_rootless.stat.exists
-  become: true
-  become_user: "{{ ansible_user_id }}"
   environment:
     XDG_RUNTIME_DIR: "/run/user/{{ ansible_user_uid }}"
     DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_user_uid }}/bus"
