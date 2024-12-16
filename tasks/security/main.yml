@@ -1,5 +1,6 @@
 ---
 - name: Apply CIS-remediation for Ubuntu 22.04
+  when: ubtu22_runcis  == true
   ansible.builtin.include_role:
     name: ansible-lockdown.ubuntu22-cis
     apply:
