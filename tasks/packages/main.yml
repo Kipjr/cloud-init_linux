@@ -80,6 +80,15 @@
       - powershell
     state: present
 
+- name: Install PWSH
+  when: msprod.stat.exists
+  become: true
+  ansible.builtin.apt:
+    name:
+      - powershell
+    state: present
+
+
 - name: Install Webmin
   when:
     - ubtu22_pkg_webmin
