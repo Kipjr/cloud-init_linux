@@ -10,6 +10,7 @@
   ansible.builtin.apt:
     name:
       - xfsprogs
+      - quota
     state: present
 
 # sudo modprobe -v xfs
