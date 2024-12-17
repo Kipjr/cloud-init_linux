@@ -270,3 +270,15 @@
       type: xfs
       device: /dev/sdb1
       o: size=16m
+
+- name: Create REVERSE_PROXY network
+  community.docker.docker_network:
+    name: REVERSE_PROXY
+    drive: bridge
+    driver_options:
+      com.docker.network.bridge.name: REVERSE_PROXY
+    ipam_config:
+      - subnet: 192.168.224.128/25
+        gateway: 192.168.224.129
+        
+
