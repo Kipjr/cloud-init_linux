@@ -37,6 +37,7 @@
 
 - name: Download Webmin Repo Setup
   register: webmin_repo_download
+  ignore_errors: true
   when:
     - ubtu22_pkg_webmin
     - not webminsetup.stat.exists
