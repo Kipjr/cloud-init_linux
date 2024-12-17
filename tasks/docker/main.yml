@@ -258,23 +258,15 @@
 - name: Create CA_CERT volume
   community.docker.docker_volume:
     name: CA_CERT
-    driver_options:
-      type: xfs
-      device: /dev/sdb1
-      o: size=16m
 
 - name: Create WILDCARD_CERT volume
   community.docker.docker_volume:
     name: WILDCARD_CERT
-    driver_options:
-      type: xfs
-      device: /dev/sdb1
-      o: size=16m
 
 - name: Create REVERSE_PROXY network
   community.docker.docker_network:
     name: REVERSE_PROXY
-    drive: bridge
+    driver: bridge
     driver_options:
       com.docker.network.bridge.name: REVERSE_PROXY
     ipam_config:
