@@ -30,17 +30,11 @@
     repo: "deb https://packages.microsoft.com/ubuntu/{{ ansible_distribution_version }}/prod {{ ansible_distribution_release }} main"
     state: present
 
-- name: Check if Webmin Repo Setup exists
-  ansible.builtin.stat:
-    path: "/tmp/setup-repos.sh"
-  register: webminsetup
-
 - name: Download Webmin Repo Setup
   register: webmin_repo_download
   ignore_errors: true
   when:
     - ubtu22_pkg_webmin
-    - not webminsetup.stat.exists
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/webmin/webmin/master/setup-repos.sh
     dest: /tmp/setup-repos.sh
@@ -96,7 +90,6 @@
     name:
       - powershell
     state: present
-
 
 - name: Install Webmin
   when:
