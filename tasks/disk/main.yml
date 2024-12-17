@@ -1,0 +1,45 @@
+---
+
+- name: Ensure all packages are up to date
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Install required packages
+  become: true
+  ansible.builtin.apt:
+    name:
+      - xfsprogs
+      - quota
+    state: present
+
+# sudo modprobe -v xfs
+
+# fdisk -l 
+# Disk /dev/xvda: 40 GiB, 42949672960 bytes, 83886080 sectors
+# Disk /dev/xvdf: 400 GiB, 429496729600 bytes, 838860800 sectors
+
+# mkfs.xfs [options] /dev/device 
+
+# read info and reuse it in subsequent task
+- name: Read device information (always use unit when probing)
+  community.general.parted: device=/dev/sdb unit=MiB
+  register: sdb_info
+
+- name: Create a new XFS data partition
+  community.general.parted:
+    device: /dev/sdb
+    label: gpt
+    name: data
+    number: 1
+    state: present
+    fs_type: xfs
+
+- name: Create a new log partition
+  community.general.parted:
+    device: /dev/sdc
+    label: gpt
+    name: log
+    number: 1
+    state: present
+    fs_type: ext4

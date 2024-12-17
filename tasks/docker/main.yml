@@ -122,12 +122,12 @@
 - name: Configure Docker Daemon.json
   become: true
   ansible.builtin.copy:
-    dest: /etc/docker/daemon.json
+    dest: /home/{{ ansible_user_id }}/.config/docker/daemon.json
     mode: "0644"
     content: |
       {
         "iptables": true,
-        "bip": "10.249.0.1/24"
+        "bip": "10.249.0.1/24",
         "default-address-pools":[
           {"base":"10.249.1.0/24","size":28}
         ]
@@ -254,3 +254,21 @@
     docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
     project_src: /home/{{ ansible_user_id }}/docker/portainer
     state: present
+
+- name: Create CA_CERT volume
+  community.docker.docker_volume:
+    name: CA_CERT
+
+- name: Create WILDCARD_CERT volume
+  community.docker.docker_volume:
+    name: WILDCARD_CERT
+
+- name: Create REVERSE_PROXY network
+  community.docker.docker_network:
+    name: REVERSE_PROXY
+    driver: bridge
+    driver_options:
+      com.docker.network.bridge.name: REVERSE_PROXY
+    ipam_config:
+      - subnet: 192.168.224.128/25
+        gateway: 192.168.224.129
