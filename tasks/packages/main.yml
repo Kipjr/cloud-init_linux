@@ -36,6 +36,7 @@
   register: webminsetup
 
 - name: Download Webmin Repo Setup
+  register: webmin_repo_download
   when:
     - ubtu22_pkg_webmin
     - not webminsetup.stat.exists
@@ -47,7 +48,7 @@
 - name: Configure Webmin Repo
   when:
     - ubtu22_pkg_webmin
-    - webminsetup.stat.exists
+    - webmin_repo_download.rc == 0
   become: true
   args:
     creates: /etc/apt/sources.list.d/webmin.list
