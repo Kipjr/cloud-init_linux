@@ -122,7 +122,7 @@
 - name: Configure Docker Daemon.json
   become: true
   ansible.builtin.copy:
-    dest: /etc/docker/daemon.json
+    dest: /home/{{ ansible_user_id }}/.config/docker/daemon.json
     mode: "0644"
     content: |
       {
@@ -272,5 +272,3 @@
     ipam_config:
       - subnet: 192.168.224.128/25
         gateway: 192.168.224.129
-        
-
