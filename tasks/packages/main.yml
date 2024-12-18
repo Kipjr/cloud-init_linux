@@ -43,7 +43,7 @@
 - name: Configure Webmin Repo
   when:
     - ubtu22_pkg_webmin
-    - webmin_repo_download.rc == 0
+    - webmin_repo_download.state == "file"
   become: true
   args:
     creates: /etc/apt/sources.list.d/webmin.list
