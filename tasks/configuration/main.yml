@@ -39,7 +39,7 @@
     generate_ssh_key: true
 
 - name: Add SSH public key to authorized_keys
-  when: 
+  when:
     - not file_private_key.stat.exists
     - file_ssh_private_key.rc == 0
   ansible.posix.authorized_key:
@@ -59,8 +59,8 @@
 
 - name: Enable SSH key-based login
   when:
-   - not file_private_key.stat.exists
-   - file_ssh_private_key.rc == 0
+    - not file_private_key.stat.exists
+    - file_ssh_private_key.rc == 0
   become: true
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
