@@ -15,15 +15,17 @@
 
 # sudo modprobe -v xfs
 
-# fdisk -l 
+# fdisk -l
 # Disk /dev/xvda: 40 GiB, 42949672960 bytes, 83886080 sectors
 # Disk /dev/xvdf: 400 GiB, 429496729600 bytes, 838860800 sectors
 
-# mkfs.xfs [options] /dev/device 
+# mkfs.xfs [options] /dev/device
 
 # read info and reuse it in subsequent task
 - name: Read device information (always use unit when probing)
-  community.general.parted: device=/dev/sdb unit=MiB
+  community.general.parted:
+  unit: MiB
+  device: /dev/sdb
   register: sdb_info
 
 - name: Create a new XFS data partition
