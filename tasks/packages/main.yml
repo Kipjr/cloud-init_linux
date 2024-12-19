@@ -23,12 +23,12 @@
     path: "/tmp/packages-microsoft-prod.deb"
     state: absent
 
-- name: Add Microsoft APT repository
-  when: msprod.stat.exists
-  become: true
-  ansible.builtin.apt_repository:
-    repo: "deb https://packages.microsoft.com/ubuntu/{{ ansible_distribution_version }}/prod {{ ansible_distribution_release }} main"
-    state: present
+#- name: Add Microsoft APT repository
+#  when: msprod.stat.exists
+#  become: true
+#  ansible.builtin.apt_repository:
+#    repo: "deb https://packages.microsoft.com/ubuntu/{{ ansible_distribution_version }}/prod {{ ansible_distribution_release }} main"
+#    state: present
 
 - name: Download Webmin Repo Setup
   register: webmin_repo_download
