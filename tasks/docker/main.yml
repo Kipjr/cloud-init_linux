@@ -118,6 +118,7 @@
 - name: Check if lingering is enabled for the user
   ansible.builtin.command: loginctl show-user {{ ansible_user_id }} --property=Linger
   register: linger_status
+  ignore_errors: true
   changed_when: false
 
 - name: Enable lingering for the user
