@@ -6,4 +6,4 @@
   environment:
     PATH: /home/{{ ansible_env.USER }}/.local/bin:{{ ansible_env.PATH }}
   roles:
-      - role: "{{ playbook_dir }}"
+    - role: "{{ playbook_dir }}"
