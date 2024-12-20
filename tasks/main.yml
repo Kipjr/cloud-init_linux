@@ -5,6 +5,14 @@
     content: "{{ ansible_facts | to_nice_json }}"
     dest: "/tmp/ansible_facts_{{ inventory_hostname }}.json"
 
+- name: Get my current environment
+  ansible.builtin.set_fact:
+    in_pipeline: {{ ansible_env.RUNNER_ENVIRONMENT in ['github-hosted','self-hosted'] }}
+
+- name: Display current environment
+  debug:
+    msg: "Running in pipeline: {{ ansible_facts['in_pipeline'] }}"
+
 - name: Disk Configuration
   when: ubtu22_run_task_disk
   ansible.builtin.import_tasks: packages/main.yml
