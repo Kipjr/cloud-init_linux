@@ -1,13 +1,13 @@
 name: Ansible
 
 on: 
-  push:
-    paths:
-      - '**.yml'
-      - '**.sh'
-      - '**.ps1'
-    branches-ignore:
-      - master
+#  push:
+#    paths:
+#      - '**.yml'
+#      - '**.sh'
+#      - '**.ps1'
+#    branches-ignore:
+#      - master
   pull_request:
   workflow_dispatch:
     inputs:
