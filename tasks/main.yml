@@ -11,7 +11,7 @@
 
 - name: Display current environment
   ansible.builtin.debug:
-    msg: "Running in pipeline: {{ ansible_facts['in_pipeline'] }}"
+    msg: "Running in pipeline: {{ in_pipeline }}"
 
 - name: Disk Configuration
   when: ubtu22_run_task_disk
