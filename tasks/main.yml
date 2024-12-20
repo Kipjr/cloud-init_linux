@@ -7,7 +7,7 @@
 
 - name: Get my current environment
   ansible.builtin.set_fact:
-    in_pipeline: {{ ansible_env.RUNNER_ENVIRONMENT in ['github-hosted','self-hosted'] }}
+    in_pipeline: "{{ ansible_env.RUNNER_ENVIRONMENT | default('') in ['github-hosted', 'self-hosted'] }}"
 
 - name: Display current environment
   debug:
