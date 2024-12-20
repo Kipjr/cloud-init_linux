@@ -249,6 +249,7 @@
     exit 0
 
 - name: Run the Docker service
+  when: ! in_pipeline
   ansible.builtin.systemd:
     name: docker
     enabled: true
