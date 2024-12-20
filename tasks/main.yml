@@ -10,7 +10,7 @@
     in_pipeline: "{{ ansible_env.RUNNER_ENVIRONMENT | default('') in ['github-hosted', 'self-hosted'] }}"
 
 - name: Display current environment
-  debug:
+  ansible.builtin.debug:
     msg: "Running in pipeline: {{ ansible_facts['in_pipeline'] }}"
 
 - name: Disk Configuration
