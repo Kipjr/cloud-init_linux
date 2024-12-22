@@ -41,7 +41,7 @@
 - name: Add SSH public key to authorized_keys
   when:
     - not file_private_key.stat.exists
-    - file_ssh_private_key.rc == 0
+    - file_ssh_private_key.state == "present"
   ansible.posix.authorized_key:
     user: "{{ ansible_user_id }}"
     key: "{{ lookup('file', '/home/{{ ansible_user_id }}/.ssh/id_rsa.pub') }}"
