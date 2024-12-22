@@ -16,7 +16,11 @@ on:
         required: true
         default: false
         type: boolean
-
+      ansible_verbose:
+        description: "Verbose mode"
+        required: true
+        default: false
+        type: boolean
 jobs:
   lint:
     runs-on: ubuntu-latest
@@ -90,4 +94,9 @@ jobs:
           pip install ansible
 
       - name: Run Ansible Playbook
+        if: ${{ inputs.ansible_verbose == false }}
         run: ansible-playbook -i inventory site.yml
+      
+      - name: Run Ansible Playbook (verbose)
+        if: ${{ inputs.ansible_verbose == true }}
+        run: ansible-playbook -i inventory -vvvv site.yml
