@@ -19,11 +19,12 @@ ssh_pwauth: false
 package_update: true
 package_upgrade: true
 packages:
+  - python3
   - apt-transport-https
   - software-properties-common
   - git
 runcmd:
-  - python -m ensurepip --upgrade
+  -  curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py && python3 get-pip.py --user
 #  - wget -O /run/cloud-init/tmp/script.sh https://raw.githubusercontent.com/Kipjr/cloud-init_ubuntu/master/standalone_ansible_playbook.sh
 #  - chmod +x /run/cloud-init/tmp/script.sh 
 #  - sudo -iu ${CI_USER} -- /run/cloud-init/tmp/script.sh
