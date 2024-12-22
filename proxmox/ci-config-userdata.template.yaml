@@ -22,7 +22,8 @@ packages:
   - apt-transport-https
   - software-properties-common
   - git
-#runcmd:
+runcmd:
+  - python -m ensurepip --upgrade
 #  - wget -O /run/cloud-init/tmp/script.sh https://raw.githubusercontent.com/Kipjr/cloud-init_ubuntu/master/standalone_ansible_playbook.sh
 #  - chmod +x /run/cloud-init/tmp/script.sh 
 #  - sudo -iu ${CI_USER} -- /run/cloud-init/tmp/script.sh
