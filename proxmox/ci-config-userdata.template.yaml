@@ -36,6 +36,6 @@ ansible:
   pull:
     url: ${CI_GITHUB_ANSIBLE_PLAYBOOK}
     playbook_name: site.yml
-    inventory: localhost
+    inventory: inventory
     clean: true
     full: true
