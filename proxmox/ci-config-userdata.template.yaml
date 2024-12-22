@@ -20,11 +20,12 @@ package_update: true
 package_upgrade: true
 packages:
   - python3
+  - python3-pip
   - apt-transport-https
   - software-properties-common
   - git
-runcmd:
-  -  sudo -u ${CI_USER} curl https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py && sudo -u ${CI_USER} python3 /tmp/get-pip.py --user
+#runcmd:
+#  - sudo -u ${CI_USER} curl https://bootstrap.pypa.io/get-pip.py -o /tmp/get-pip.py && sudo -u ${CI_USER} python3 /tmp/get-pip.py --user
 #  - wget -O /run/cloud-init/tmp/script.sh https://raw.githubusercontent.com/Kipjr/cloud-init_ubuntu/master/standalone_ansible_playbook.sh
 #  - chmod +x /run/cloud-init/tmp/script.sh 
 #  - sudo -iu ${CI_USER} -- /run/cloud-init/tmp/script.sh
@@ -35,5 +36,6 @@ ansible:
   pull:
     url: ${CI_GITHUB_ANSIBLE_PLAYBOOK}
     playbook_name: site.yml
+    inventory: localhost
     clean: true
     full: true
