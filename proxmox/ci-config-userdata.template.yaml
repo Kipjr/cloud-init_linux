@@ -22,19 +22,15 @@ packages:
   - apt-transport-https
   - software-properties-common
   - git
-runcmd:
-  - wget -O /run/cloud-init/tmp/script.sh https://raw.githubusercontent.com/Kipjr/cloud-init_ubuntu/master/standalone_ansible_playbook.sh
-  - chmod +x /run/cloud-init/tmp/script.sh 
-  - sudo -iu ${CI_USER} -- /run/cloud-init/tmp/script.sh
-#ansible:
-#  package_name: ansible
-#  install_method: pip
-#  galaxy:
-#    actions:
-#      - [ "collection", "install", "community.general" ]
-#      - [ "collection", "install", "community.docker" ]
-#  pull:
-#    url: ${CI_GITHUB_ANSIBLE_PLAYBOOK}
-#    playbook_name: site.yml
-#    clean: true
-#    full: true
+#runcmd:
+#  - wget -O /run/cloud-init/tmp/script.sh https://raw.githubusercontent.com/Kipjr/cloud-init_ubuntu/master/standalone_ansible_playbook.sh
+#  - chmod +x /run/cloud-init/tmp/script.sh 
+#  - sudo -iu ${CI_USER} -- /run/cloud-init/tmp/script.sh
+ansible:
+  package_name: ansible
+  install_method: pip
+  pull:
+    url: ${CI_GITHUB_ANSIBLE_PLAYBOOK}
+    playbook_name: site.yml
+    clean: true
+    full: true
