@@ -1,6 +1,7 @@
 ---
 
 - name: Create ~/.config/docker if not exist
+  when: ubtu22_docker_type == "rootless"
   ansible.builtin.file:
     path: /home/{{ ansible_user_id }}/.config/docker
     state: directory
@@ -37,11 +38,13 @@
     state: present
 
 - name: Check if Docker Rootless is installed
+  when: ubtu22_docker_type == "rootless"
   ansible.builtin.stat:
     path: /run/user/{{ ansible_user_uid }}/docker.sock
   register: file_check_docker_rootless
 
 - name: Disable Docker.service
+  when: ubtu22_docker_type == "rootless"
   become: true
   ansible.builtin.systemd:
     name: docker.service
@@ -49,6 +52,7 @@
     enabled: false
 
 - name: Disable Docker.socket
+  when: ubtu22_docker_type == "rootless"
   become: true
   ansible.builtin.systemd:
     name: docker.socket
@@ -56,6 +60,7 @@
     enabled: false
 
 - name: Remove docker.sock
+  when: ubtu22_docker_type == "rootless"
   become: true
   ansible.builtin.file:
     path: /var/run/docker.sock
@@ -75,7 +80,7 @@
     - 9443
 
 - name: Install Docker (rootless, using systemd)
-  when: not file_check_docker_rootless.stat.exists
+  when: not file_check_docker_rootless.stat.exists && ubtu22_docker_type == "rootless"
   environment:
     XDG_RUNTIME_DIR: "/run/user/{{ ansible_user_uid }}"
     DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_user_uid }}/bus"
@@ -86,12 +91,14 @@
     dockerd-rootless-setuptool.sh install
 
 - name: Check if /usr/bin is in PATH in .bashrc
+  when: ubtu22_docker_type == "rootless"
   ansible.builtin.command: grep -q 'export PATH=/usr/bin:$PATH' /home/{{ ansible_user_id }}/.bashrc
   register: bashrc_path_usr_bin_check
   ignore_errors: true
   changed_when: false
 
 - name: Ensure /usr/bin is in PATH in .bashrc
+  when: ubtu22_docker_type == "rootless"
   ansible.builtin.lineinfile:
     path: /home/{{ ansible_user_id }}/.bashrc
     line: 'export PATH=/usr/bin:$PATH'
@@ -101,12 +108,14 @@
   when: bashrc_path_usr_bin_check.rc != 0
 
 - name: Check if DOCKER_HOST is set in .bashrc
+  when: ubtu22_docker_type == "rootless"
   ansible.builtin.command: grep -q 'export DOCKER_HOST=unix:///run/user/{{ ansible_user_uid }}/docker.sock' /home/{{ ansible_user_id }}/.bashrc
   register: bashrc_docker_host_check
   ignore_errors: true
   changed_when: false
 
 - name: Ensure DOCKER_HOST is set in .bashrc
+  when: ubtu22_docker_type == "rootless"
   ansible.builtin.lineinfile:
     path: /home/{{ ansible_user_id }}/.bashrc
     line: "export DOCKER_HOST=unix:///run/user/{{ ansible_user_uid }}/docker.sock"
@@ -116,17 +125,20 @@
   when: bashrc_docker_host_check.rc != 0
 
 - name: Check if lingering is enabled for the user
+  when: ubtu22_docker_type == "rootless"
   ansible.builtin.command: loginctl show-user {{ ansible_user_id }} --property=Linger
   register: linger_status
   ignore_errors: true
   changed_when: false
 
 - name: Enable lingering for the user
+  when: ubtu22_docker_type == "rootless"
   ansible.builtin.command: loginctl enable-linger {{ ansible_user_id }}
   when: linger_status.stdout != 'Linger=yes'
   changed_when: linger_status.stdout != 'Linger=yes'
 
 - name: Configure Docker Daemon.json
+  when: ubtu22_docker_type == "rootless"
   become: true
   ansible.builtin.copy:
     dest: /home/{{ ansible_user_id }}/.config/docker/daemon.json
@@ -141,12 +153,14 @@
       }
 
 - name: Ensure the user directory docker service exists
+  when: ubtu22_docker_type == "rootless"
   ansible.builtin.file:
     path: /home/{{ ansible_user_id }}/.config/systemd/user/docker.service.d
     state: directory
     mode: "0755"
 
 - name: Configure systemd override for user
+  when: ubtu22_docker_type == "rootless"
   ansible.builtin.copy:
     dest: /home/{{ ansible_user_id }}/.config/systemd/user/docker.service.d/override.conf
     mode: "0644"
@@ -156,6 +170,7 @@
       Environment="DOCKERD_ROOTLESS_ROOTLESSKIT_NET=slirp4netns --cidr=10.249.0.0/24"
 
 - name: Ensure sysctl configurations for Docker are present in /etc/sysctl.d/docker.conf
+  when: ubtu22_docker_type == "rootless"
   become: true
   ansible.builtin.lineinfile:
     path: /etc/sysctl.d/docker.conf
@@ -168,6 +183,7 @@
     - "net.ipv4.ping_group_range=0 2147483647"
 
 - name: Apply sysctl settings
+  when: ubtu22_docker_type == "rootless"
   become: true
   changed_when: true
   ansible.builtin.shell: |
@@ -182,6 +198,7 @@
     state: directory
 
 - name: Configure Portainer with Docker Compose
+  when: ubtu22_docker_type == "rootless"
   ansible.builtin.blockinfile:
     append_newline: true
     prepend_newline: true
@@ -249,6 +266,7 @@
     exit 0
 
 - name: Run the Docker service
+  when: ubtu22_docker_type == "rootless"
   when: ! in_pipeline
   ansible.builtin.systemd:
     name: docker
@@ -257,6 +275,7 @@
     scope: user
 
 - name: Start Docker Portainer
+  when: ubtu22_docker_type == "rootless"
   when: ubtu22_portainer_agent
   community.docker.docker_compose_v2:
     docker_host: unix:///run/user/{{ ansible_user_uid }}/docker.sock
