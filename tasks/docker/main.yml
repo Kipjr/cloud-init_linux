@@ -270,7 +270,7 @@
         scope: user
 
     - name: Run the Docker service
-      when: ubtu22_docker_type eq "rootfull" and not in_pipeline
+      when: ubtu22_docker_type == "rootfull" and not in_pipeline
       ansible.builtin.systemd:
         name: docker
         enabled: true
