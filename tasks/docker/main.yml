@@ -1,11 +1,6 @@
 ---
-
-- name: Create ~/.config/docker if not exist
-  when: ubtu22_docker_type == "rootless"
-  ansible.builtin.file:
-    path: /home/{{ ansible_user_id }}/.config/docker
-    state: directory
-    mode: "0755"
+- name: General (Pre) Docker
+  block:
 
 - name: Add Docker official GPG key
   become: true
@@ -37,8 +32,66 @@
       - docker-ce-rootless-extras
     state: present
 
-- name: Check if Docker Rootless is installed
+- name: Allow incoming access to eth0
+  become: true
+  community.general.ufw:
+    rule: allow
+    interface: eth0
+    direction: in
+    proto: tcp
+    to_port: '{{ item }}'
+  loop:
+    - 80
+    - 443
+    - 9443
+
+- name: Ensure sysctl configurations for Docker are present in /etc/sysctl.d/docker.conf
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/sysctl.d/docker.conf
+    line: "{{ item }}"
+    create: true
+    state: present
+    mode: "0644"
+  with_items:
+    - "net.ipv4.ip_unprivileged_port_start=0"
+    - "net.ipv4.ping_group_range=0 2147483647"
+
+
+- name: Apply sysctl settings
+  become: true
+  changed_when: true
+  ansible.builtin.shell: |
+    sysctl --system
+    exit 0
+
+- name: Rootfull Docker
+  when: ubtu22_docker_type == "rootfull"
+  block:
+
+- name: Set variables
+     docker_host: /var/run/docker.sock
+     docker_volumes: /var/lib/docker/volumes
+     docker_daemon_conf:  /etc/docker/daemon.json
+
+- name: Rootless Docker
   when: ubtu22_docker_type == "rootless"
+  block:
+
+   - name: Set variables
+     docker_host: /run/user/{{ ansible_user_uid }}/docker.sock
+     docker_volumes: home/{{ ansible_user_id }}/.local/share/docker/volumes
+     docker_daemon_conf: /home/{{ ansible_user_id }}/.config/docker/daemon.json
+
+  
+- name: Create ~/.config/docker if not exist
+  when: ubtu22_docker_type == "rootless"
+  ansible.builtin.file:
+    path: /home/{{ ansible_user_id }}/.config/docker
+    state: directory
+    mode: "0755"
+
+- name: Check if Docker Rootless is installed
   ansible.builtin.stat:
     path: /run/user/{{ ansible_user_uid }}/docker.sock
   register: file_check_docker_rootless
@@ -65,19 +118,6 @@
   ansible.builtin.file:
     path: /var/run/docker.sock
     state: absent
-
-- name: Allow incoming access to eth0
-  become: true
-  community.general.ufw:
-    rule: allow
-    interface: eth0
-    direction: in
-    proto: tcp
-    to_port: '{{ item }}'
-  loop:
-    - 80
-    - 443
-    - 9443
 
 - name: Install Docker (rootless, using systemd)
   when: not file_check_docker_rootless.stat.exists && ubtu22_docker_type == "rootless"
@@ -137,20 +177,7 @@
   when: linger_status.stdout != 'Linger=yes'
   changed_when: linger_status.stdout != 'Linger=yes'
 
-- name: Configure Docker Daemon.json
-  when: ubtu22_docker_type == "rootless"
-  become: true
-  ansible.builtin.copy:
-    dest: /home/{{ ansible_user_id }}/.config/docker/daemon.json
-    mode: "0644"
-    content: |
-      {
-        "iptables": true,
-        "bip": "10.249.0.1/24",
-        "default-address-pools":[
-          {"base":"10.249.1.0/24","size":28}
-        ]
-      }
+
 
 - name: Ensure the user directory docker service exists
   when: ubtu22_docker_type == "rootless"
@@ -169,35 +196,37 @@
       Environment="DOCKERD_ROOTLESS_ROOTLESSKIT_DISABLE_HOST_LOOPBACK=false"
       Environment="DOCKERD_ROOTLESS_ROOTLESSKIT_NET=slirp4netns --cidr=10.249.0.0/24"
 
-- name: Ensure sysctl configurations for Docker are present in /etc/sysctl.d/docker.conf
-  when: ubtu22_docker_type == "rootless"
-  become: true
-  ansible.builtin.lineinfile:
-    path: /etc/sysctl.d/docker.conf
-    line: "{{ item }}"
-    create: true
-    state: present
-    mode: "0644"
-  with_items:
-    - "net.ipv4.ip_unprivileged_port_start=0"
-    - "net.ipv4.ping_group_range=0 2147483647"
 
-- name: Apply sysctl settings
-  when: ubtu22_docker_type == "rootless"
-  become: true
+
+
+- name: Refresh env
   changed_when: true
   ansible.builtin.shell: |
-    sysctl --system
+    . /home/{{ ansible_user_id }}/.bashrc
     exit 0
 
-- name: Ensure the directory for Portainer exists
-  when: ubtu22_portainer_agent
-  ansible.builtin.file:
-    path: /home/{{ ansible_user_id }}/docker/portainer
-    mode: '0750'
-    state: directory
 
-- name: Configure Portainer with Docker Compose
+
+- name: General (post) Docker
+  block:
+
+- name: Configure Docker Daemon.json
+  become: true
+  ansible.builtin.copy:
+    dest: {{ docker_daemon_conf }}
+    mode: "0644"
+    content: |
+      {
+        "iptables": true,
+        "bip": "10.249.0.1/24",
+        "default-address-pools":[
+          {"base":"10.249.1.0/24","size":28}
+        ]
+      }
+
+
+- name: Ensure the directory for Portainer exists
+
   when: ubtu22_docker_type == "rootless"
   ansible.builtin.blockinfile:
     append_newline: true
@@ -220,8 +249,8 @@
             - no-new-privileges:true
           volumes:
             - /etc/localtime:/etc/localtime:ro
-            - /run/user/{{ ansible_user_uid }}/docker.sock:/var/run/docker.sock
-            - /home/{{ ansible_user_id }}/.local/share/docker/volumes:/var/lib/docker/volumes
+            - {{ docker_host }}:/var/run/docker.sock
+            - {{ docker_volumes }}:/var/lib/docker/volumes
           ports:
             - "9001:9001"
       
@@ -236,6 +265,7 @@
             - data:/data
           ports:
             - "9443:9443"
+
 
 - name: Update Portainer EE
   when: not ubtu22_portainer_host
@@ -259,12 +289,6 @@
       profiles:
         - agent
 
-- name: Refresh env
-  changed_when: true
-  ansible.builtin.shell: |
-    . /home/{{ ansible_user_id }}/.bashrc
-    exit 0
-
 - name: Run the Docker service
   when: ubtu22_docker_type == "rootless"
   when: ! in_pipeline
@@ -274,6 +298,15 @@
     state: reloaded
     scope: user
 
+- name: Run the Docker service
+  when: ubtu22_docker_type == "rootfull"
+  when: ! in_pipeline
+  ansible.builtin.systemd:
+    name: docker
+    enabled: true
+    state: reloaded
+    scope: system
+
 - name: Start Docker Portainer
   when: ubtu22_docker_type == "rootless"
   when: ubtu22_portainer_agent
@@ -282,13 +315,16 @@
     project_src: /home/{{ ansible_user_id }}/docker/portainer
     state: present
 
+
 - name: Create CA_CERT volume
   community.docker.docker_volume:
     name: CA_CERT
 
+
 - name: Create WILDCARD_CERT volume
   community.docker.docker_volume:
     name: WILDCARD_CERT
+
 
 - name: Create REVERSE_PROXY network
   community.docker.docker_network:
