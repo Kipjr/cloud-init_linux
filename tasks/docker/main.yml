@@ -262,8 +262,7 @@
             - agent
 
     - name: Run the Docker service
-      when: ubtu22_docker_type == "rootless"
-      when: ! in_pipeline
+      when: ubtu22_docker_type == "rootless" && !in_pipeline
       ansible.builtin.systemd:
         name: docker
         enabled: true
