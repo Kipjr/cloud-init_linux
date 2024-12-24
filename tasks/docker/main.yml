@@ -262,7 +262,7 @@
             - agent
 
     - name: Run the Docker service
-      when: ubtu22_docker_type == "rootless" && !in_pipeline
+      when: ubtu22_docker_type eq "rootless" and not in_pipeline
       ansible.builtin.systemd:
         name: docker
         enabled: true
@@ -270,7 +270,7 @@
         scope: user
 
     - name: Run the Docker service
-      when: ubtu22_docker_type == "rootfull" && !in_pipeline
+      when: ubtu22_docker_type eq "rootfull" and not in_pipeline
       ansible.builtin.systemd:
         name: docker
         enabled: true
@@ -278,7 +278,7 @@
         scope: system
 
     - name: Start Docker Portainer
-      when: ubtu22_docker_type == "rootless" && (ubtu22_portainer_agent || ubtu22_portainer_host)
+      when: ubtu22_docker_type eq "rootless" and (ubtu22_portainer_agent or ubtu22_portainer_host)
       community.docker.docker_compose_v2:
         docker_host: unix://{{ docker_host }}
         project_src: /home/{{ ansible_user_id }}/docker/portainer
