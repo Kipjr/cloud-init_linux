@@ -4,7 +4,7 @@ ubtu22_pkg_snmp: false
 ubtu22_portainer_host: true
 ubtu22_portainer_agent: true
 ubtu22_docker_type: "rootless"
-#ubtu22_docker_type: "rootfull"
+# ubtu22_docker_type: "rootfull"
 ubtu22_run_task_configuration: true
 ubtu22_run_task_disk: true
 ubtu22_run_task_docker: true
