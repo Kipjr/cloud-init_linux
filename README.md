@@ -1,4 +1,6 @@
 # cloud-init_ubuntu
+[![Ansible](https://github.com/Kipjr/cloud-init_ubuntu/actions/workflows/ansible.yml/badge.svg)](https://github.com/Kipjr/cloud-init_ubuntu/actions/workflows/ansible.yml)
+
 Cloud-Init for Ubuntu Server
 
 # Usage
