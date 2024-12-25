@@ -269,30 +269,30 @@
     - name: Startup of Docker
       when: not in_pipeline
       block:
-        - name: Run the Docker service    
+        - name: Run the Docker service
           when: ubtu22_docker_type == "rootless"
           ansible.builtin.systemd:
             name: docker
             enabled: true
             state: reloaded
             scope: user
-        
+
         - name: Run the Docker service
           when: ubtu22_docker_type == "rootfull" and not in_pipeline
           ansible.builtin.systemd:
             name: docker
             enabled: true
             state: reloaded
-            scope: system    
-        
+            scope: system
+
         - name: Create CA_CERT volume
           community.docker.docker_volume:
             name: CA_CERT
-    
+
         - name: Create WILDCARD_CERT volume
           community.docker.docker_volume:
             name: WILDCARD_CERT
-        
+
         - name: Create REVERSE_PROXY network
           community.docker.docker_network:
             name: REVERSE_PROXY
