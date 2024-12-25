@@ -31,48 +31,49 @@
     path: /home/{{ ansible_user_id }}/.ssh/id_rsa
   register: file_private_key
 
-- name: Generate SSH private key for user
+- name: Generate SSH private and public keys
   when: not file_private_key.stat.exists
-  ignore_errors: true
-  register: file_ssh_private_key
-  ansible.builtin.user:
-    name: "{{ ansible_user_id }}"
-    generate_ssh_key: true
+  ansible.builtin.openssh_keypair:
+    path: /home/{{ ansible_user_id }}/.ssh/id_rsa
+    type: rsa
+    size: 2048
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: '0600'
+  register: ssh_keypair
+
+- name: Ensure .ssh directory permissions
+  when: not file_private_key.stat.exists
+  ansible.builtin.file:
+    path: /home/{{ ansible_user_id }}/.ssh
+    owner: "{{ ansible_user_id }}"
+    group: "{{ ansible_user_id }}"
+    mode: '0700'
 
 - name: Add SSH public key to authorized_keys
-  when:
-    - not file_private_key.stat.exists
-    - file_ssh_private_key.state == "present"
+  when: not file_private_key.stat.exists
   ansible.posix.authorized_key:
     user: "{{ ansible_user_id }}"
-    key: "{{ lookup('file', '/home/{{ ansible_user_id }}/.ssh/id_rsa.pub') }}"
+    key: "{{ ssh_keypair.public_key }}"
 
 - name: Disable SSH password authentication
-  when:
-    - not file_private_key.stat.exists
-    - file_ssh_private_key.rc == 0
-  become: true
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regexp: '^#?PasswordAuthentication'
     line: 'PasswordAuthentication no'
-    state: present
+  state: present
 
 - name: Enable SSH key-based login
-  when:
-    - not file_private_key.stat.exists
-    - file_ssh_private_key.rc == 0
-  become: true
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regexp: '^#?PubkeyAuthentication'
     line: 'PubkeyAuthentication yes'
-    state: present
+  state: present
 
 - name: Restart SSH service
   when:
     - not file_private_key.stat.exists
-    - file_ssh_private_key.rc == 0
+    - ssh_keypair.stat.exists
   become: true
   ansible.builtin.service:
     name: ssh
