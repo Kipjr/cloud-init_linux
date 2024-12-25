@@ -61,14 +61,14 @@
     path: /etc/ssh/sshd_config
     regexp: '^#?PasswordAuthentication'
     line: 'PasswordAuthentication no'
-  state: present
+    state: present
 
 - name: Enable SSH key-based login
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regexp: '^#?PubkeyAuthentication'
     line: 'PubkeyAuthentication yes'
-  state: present
+    state: present
 
 - name: Restart SSH service
   when:
