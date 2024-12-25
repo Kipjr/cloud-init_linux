@@ -204,6 +204,7 @@
       ansible.builtin.file:
         path: /home/{{ ansible_user_id }}/docker/portainer
         state: directory
+        mode: "0750"
 
     - name: Create docker-compose for portainer
       ansible.builtin.blockinfile:
