@@ -1,6 +1,7 @@
 ---
 
 - name: Set the machine FQDN
+  when: "{{ ansible_fqdn }}" | length <= 32
   become: true
   ansible.builtin.hostname:
     name: "{{ ansible_fqdn }}"
