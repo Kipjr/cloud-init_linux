@@ -202,8 +202,8 @@
 
     - name: Ensure the directory for Portainer exists
       ansible.builtin.file:
-      path: /home/{{ ansible_user_id }}/docker/portainer
-      state: directory
+        path: /home/{{ ansible_user_id }}/docker/portainer
+        state: directory
 
     - name: Create docker-compose for portainer
       ansible.builtin.blockinfile:
@@ -309,6 +309,3 @@
             docker_host: unix://{{ docker_host }}
             project_src: /home/{{ ansible_user_id }}/docker/portainer
             state: present
-
-
-
