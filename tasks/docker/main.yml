@@ -201,6 +201,11 @@
           }
 
     - name: Ensure the directory for Portainer exists
+      ansible.builtin.file:
+      path: /home/{{ ansible_user_id }}/docker/portainer
+      state: directory
+
+    - name: Create docker-compose for portainer
       ansible.builtin.blockinfile:
         append_newline: true
         prepend_newline: true
@@ -261,43 +266,49 @@
           profiles:
             - agent
 
-    - name: Run the Docker service
-      when: ubtu22_docker_type == "rootless" and not in_pipeline
-      ansible.builtin.systemd:
-        name: docker
-        enabled: true
-        state: reloaded
-        scope: user
+    - name: Startup of Docker
+      when: not in_pipeline
+      block:
+        - name: Run the Docker service
+          when: ubtu22_docker_type == "rootless"
+          ansible.builtin.systemd:
+            name: docker
+            enabled: true
+            state: reloaded
+            scope: user
 
-    - name: Run the Docker service
-      when: ubtu22_docker_type == "rootfull" and not in_pipeline
-      ansible.builtin.systemd:
-        name: docker
-        enabled: true
-        state: reloaded
-        scope: system
+        - name: Run the Docker service
+          when: ubtu22_docker_type == "rootfull" and not in_pipeline
+          ansible.builtin.systemd:
+            name: docker
+            enabled: true
+            state: reloaded
+            scope: system
 
-    - name: Start Docker Portainer
-      when: ubtu22_docker_type == "rootless" and (ubtu22_portainer_agent or ubtu22_portainer_host) and not in_pipeline
-      community.docker.docker_compose_v2:
-        docker_host: unix://{{ docker_host }}
-        project_src: /home/{{ ansible_user_id }}/docker/portainer
-        state: present
+        - name: Create CA_CERT volume
+          community.docker.docker_volume:
+            name: CA_CERT
 
-    - name: Create CA_CERT volume
-      community.docker.docker_volume:
-        name: CA_CERT
+        - name: Create WILDCARD_CERT volume
+          community.docker.docker_volume:
+            name: WILDCARD_CERT
 
-    - name: Create WILDCARD_CERT volume
-      community.docker.docker_volume:
-        name: WILDCARD_CERT
+        - name: Create REVERSE_PROXY network
+          community.docker.docker_network:
+            name: REVERSE_PROXY
+            driver: bridge
+            driver_options:
+              com.docker.network.bridge.name: REVERSE_PROXY
+            ipam_config:
+              - subnet: 192.168.224.128/25
+                gateway: 192.168.224.129
 
-    - name: Create REVERSE_PROXY network
-      community.docker.docker_network:
-        name: REVERSE_PROXY
-        driver: bridge
-        driver_options:
-          com.docker.network.bridge.name: REVERSE_PROXY
-        ipam_config:
-          - subnet: 192.168.224.128/25
-            gateway: 192.168.224.129
+        - name: Start Docker Portainer
+          when: ubtu22_docker_type == "rootless" and (ubtu22_portainer_agent or ubtu22_portainer_host) and not in_pipeline
+          community.docker.docker_compose_v2:
+            docker_host: unix://{{ docker_host }}
+            project_src: /home/{{ ansible_user_id }}/docker/portainer
+            state: present
+
+
+
