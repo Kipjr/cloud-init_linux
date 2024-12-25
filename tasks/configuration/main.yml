@@ -33,7 +33,7 @@
 
 - name: Generate SSH private and public keys
   when: not file_private_key.stat.exists
-  ansible.builtin.openssh_keypair:
+  community.crypto.openssh_keypair:
     path: /home/{{ ansible_user_id }}/.ssh/id_rsa
     type: rsa
     size: 2048
