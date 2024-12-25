@@ -26,6 +26,12 @@
       APT::Periodic::Update-Package-Lists "1";
       APT::Periodic::Unattended-Upgrade "1";
 
+- name: Create ~/.ssh if not exist
+  ansible.builtin.file:
+    path: /home/{{ ansible_user_id }}/.ssh
+    state: directory
+    mode: "0700"
+
 - name: Check if SSH private key already exists
   ansible.builtin.stat:
     path: /home/{{ ansible_user_id }}/.ssh/id_rsa
