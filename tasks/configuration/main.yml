@@ -54,6 +54,7 @@
     key: "{{ ssh_keypair.public_key }}"
 
 - name: Disable SSH password authentication
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regexp: '^#?PasswordAuthentication'
@@ -61,6 +62,7 @@
     state: present
 
 - name: Enable SSH key-based login
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
     regexp: '^#?PubkeyAuthentication'
