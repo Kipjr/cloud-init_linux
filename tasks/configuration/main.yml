@@ -29,6 +29,7 @@
 - name: Create ~/.ssh if not exist
   ansible.builtin.file:
     path: /home/{{ ansible_user_id }}/.ssh
+    owner: "{{ ansible_user_id }}"
     state: directory
     mode: "0700"
 
@@ -41,20 +42,10 @@
   when: not file_private_key.stat.exists
   community.crypto.openssh_keypair:
     path: /home/{{ ansible_user_id }}/.ssh/id_rsa
-    type: rsa
-    size: 2048
+    type: ed25519
     owner: "{{ ansible_user_id }}"
-    group: "{{ ansible_user_id }}"
     mode: '0600'
   register: ssh_keypair
-
-- name: Ensure .ssh directory permissions
-  when: not file_private_key.stat.exists
-  ansible.builtin.file:
-    path: /home/{{ ansible_user_id }}/.ssh
-    owner: "{{ ansible_user_id }}"
-    group: "{{ ansible_user_id }}"
-    mode: '0700'
 
 - name: Add SSH public key to authorized_keys
   when: not file_private_key.stat.exists
