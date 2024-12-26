@@ -54,7 +54,7 @@
     key: "{{ ssh_keypair.public_key }}"
 
 - name: Disable SSH password authentication
-  when: ssh_keypair.public_key.exist
+  when: ssh_keypair.public_key is defined
   become: true
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
@@ -63,7 +63,7 @@
     state: present
 
 - name: Enable SSH key-based login
-  when: ssh_keypair.public_key.exist
+  when: ssh_keypair.public_key is defined
   become: true
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
@@ -74,7 +74,7 @@
 - name: Restart SSH service
   when:
     - not file_private_key.stat.exists
-    - ssh_keypair.public_key.exists
+    - ssh_keypair.public_key is defined
   become: true
   ansible.builtin.service:
     name: ssh
