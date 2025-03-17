@@ -11,12 +11,16 @@ ubtu22_run_task_docker: true
 ubtu22_run_task_packages: true
 ubtu22_run_task_security: true
 ubtu22_runcis: false
+
 ubtu22cis_level_2: false
 ubtu22cis_disruption_high: false
 
 ###
 ### ubtu22cis variables
 ###
+
+#  Check ubtu22cis_grub_user password variable has been changed
+ubtu22cis_rule_1_4_1: false
 # Do not use boot password
 ubtu22cis_ask_passwd_to_boot: false
 ubtu22cis_set_boot_pass: false
