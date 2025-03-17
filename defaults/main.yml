@@ -11,6 +11,8 @@ ubtu22_run_task_docker: true
 ubtu22_run_task_packages: true
 ubtu22_run_task_security: true
 ubtu22_runcis: false
+ubtu22cis_level_2: false
+ubtu22cis_disruption_high: false
 
 ###
 ### ubtu22cis variables
@@ -44,7 +46,9 @@ ubtu22cis_rule_4_1_2_2: false
 # disable system disabling when audit logs are full"
 ubtu22cis_rule_4_1_2_3: false
 # breaks sudo during remediation: Ensure users must provide password for escalation
-ubtu22cis_rule_5_3_4: false
+ubtu22cis_rule_5_2_4: false
+# Ensure root password is set"
+ubtu22cis_rule_5_4_2_4: false
 
 ###
 ### Generic
