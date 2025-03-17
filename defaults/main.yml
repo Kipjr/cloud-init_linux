@@ -19,6 +19,7 @@ ubtu22cis_disruption_high: false
 ###
 # Do not use boot password
 ubtu22cis_ask_passwd_to_boot: false
+ubtu22cis_rule_1_4_1: false
 ubtu22cis_rule_1_4_3: false
 # Do not patch UFW to do default deny
 ubtu22cis_rule_3_5_1_7: false
