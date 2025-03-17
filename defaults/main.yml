@@ -19,36 +19,36 @@ ubtu22cis_disruption_high: false
 ###
 # Do not use boot password
 ubtu22cis_ask_passwd_to_boot: false
-ubtu22cis_rule_1_4_1: false
-ubtu22cis_rule_1_4_3: false
+ubtu22cis_set_boot_pass: false
+
 # Do not patch UFW to do default deny
-ubtu22cis_rule_3_5_1_7: false
-# Takes alot of time: Ensure no unowned files or directories exist | Set unowned files/directories to configured owner
-ubtu22cis_rule_6_1_10: false
-# Takes alot of time: Ensure no ungrouped files or directories exist | Get ungrouped files or directories
-ubtu22cis_rule_6_1_11: false
-# Takes alot of time: Audit SUID executables | Find SUID executables
-ubtu22cis_rule_6_1_12: false
-# Takes alot of time: Audit SGID executables | Find SGID executables
-ubtu22cis_rule_6_1_13: false
+ubtu22cis_rule_4_1_7: false
+
+# "7.1.12 | PATCH | Ensure no files or directories without an owner and a group exist | Set files/directories to configured owner and group"
+ubtu22cis_rule_7_1_12: false
+ubtu22cis_ownership_adjust: false
+
+# Takes alot of time: Audit SUID/SGID executables | Find SGID executables
+ubtu22cis_rule_7_1_13: false
 
 ###
 ### CIS Level 2
 ###
 
 # keep squashfs
-ubtu22cis_rule_1_1_1_2: false
+ubtu22cis_rule_1_1_1_6: false
 # Disable AppArmor enforcement
-ubtu22cis_rule_1_6_1_4: false
+ubtu22cis_rule_1_3_1_4: false
 ubtu22cis_apparmor_disable: true
 ubtu22cis_apparmor_mode: "complain"
-# enable audit logs auto delete"
-ubtu22cis_rule_4_1_2_2: false
-# disable system disabling when audit logs are full"
-ubtu22cis_rule_4_1_2_3: false
-# breaks sudo during remediation: Ensure users must provide password for escalation
+#  "6.3.2.2 | PATCH | Ensure audit logs are not automatically deleted"
+ubtu22cis_rule_6_3_2_2: false
+# "6.3.2.3 | PATCH | Ensure system is disabled when audit logs are full"
+ubtu22cis_rule_6_3_2_3: false
+
+# breaks sudo during remediation:  "5.2.4 | PATCH | Ensure users must provide password for privilege escalation"
 ubtu22cis_rule_5_2_4: false
-# Ensure root password is set"
+#  "5.4.2.4 | PATCH | Ensure root password is set"
 ubtu22cis_rule_5_4_2_4: false
 
 ###
