@@ -73,27 +73,21 @@
 - name: Rootless Docker
   when: ubtu22_docker_type == "rootless"
   block:
-
-    - name: Set ubtu22_docker_rootless_user if empty
-      set_fact:
-        ubtu22_docker_rootless_user: "{{ ansible_user_id }}"
-        when: ubtu22_docker_rootless_user | default('') | length == 0
-
     - name: Set variables
       ansible.builtin.set_fact:
-        docker_host: /run/user/{{ ubtu22_docker_rootless_user }}/docker.sock
-        docker_volumes: /home/{{ ubtu22_docker_rootless_user }}/.local/share/docker/volumes
-        docker_daemon_conf: /home/{{ ubtu22_docker_rootless_user }}/.config/docker/daemon.json
+        docker_host: /run/user/{{ ansible_user_uid }}/docker.sock
+        docker_volumes: /home/{{ ansible_user_id }}/.local/share/docker/volumes
+        docker_daemon_conf: /home/{{ ansible_user_id }}/.config/docker/daemon.json
 
-    - name: Create .config/docker if not exist
+    - name: Create ~/.config/docker if not exist
       ansible.builtin.file:
-        path: /home/{{ ubtu22_docker_rootless_user }}/.config/docker
+        path: /home/{{ ansible_user_id }}/.config/docker
         state: directory
         mode: "0755"
 
     - name: Check if Docker Rootless is installed
       ansible.builtin.stat:
-        path: /run/user/{{ ubtu22_docker_rootless_user }}/docker.sock
+        path: /run/user/{{ ansible_user_uid }}/docker.sock
       register: file_check_docker_rootless
 
     - name: Disable Docker.service
@@ -119,23 +113,23 @@
     - name: Install Docker (rootless, using systemd)
       when: not file_check_docker_rootless.stat.exists and ubtu22_docker_type == "rootless"
       environment:
-        XDG_RUNTIME_DIR: "/run/user/{{ ubtu22_docker_rootless_user }}"
-        DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ubtu22_docker_rootless_user }}/bus"
+        XDG_RUNTIME_DIR: "/run/user/{{ ansible_user_uid }}"
+        DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_user_uid }}/bus"
         HOME: "/home/{{ ansible_user_id }}"
       args:
-        creates: "/home/{{ ubtu22_docker_rootless_user }}/.docker/config.json"
+        creates: "/home/{{ ansible_user_id }}/.docker/config.json"
       ansible.builtin.shell: |
         dockerd-rootless-setuptool.sh install
 
     - name: Check if /usr/bin is in PATH in .bashrc
-      ansible.builtin.command: grep -q 'export PATH=/usr/bin:$PATH' /home/{{ ubtu22_docker_rootless_user }}/.bashrc
+      ansible.builtin.command: grep -q 'export PATH=/usr/bin:$PATH' /home/{{ ansible_user_id }}/.bashrc
       register: bashrc_path_usr_bin_check
       ignore_errors: true
       changed_when: false
 
     - name: Ensure /usr/bin is in PATH in .bashrc
       ansible.builtin.lineinfile:
-        path: /home/{{ ubtu22_docker_rootless_user }}/.bashrc
+        path: /home/{{ ansible_user_id }}/.bashrc
         line: 'export PATH=/usr/bin:$PATH'
         state: present
         create: true
@@ -144,7 +138,7 @@
 
     - name: Check if DOCKER_HOST is set in .bashrc
       when: ubtu22_docker_type == "rootless"
-      ansible.builtin.command: grep -q 'export DOCKER_HOST=unix:///run/user/{{ ubtu22_docker_rootless_user }}/docker.sock' /home/{{ ubtu22_docker_rootless_user }}/.bashrc
+      ansible.builtin.command: grep -q 'export DOCKER_HOST=unix:///run/user/{{ ansible_user_uid }}/docker.sock' /home/{{ ansible_user_id }}/.bashrc
       register: bashrc_docker_host_check
       ignore_errors: true
       changed_when: false
@@ -152,32 +146,32 @@
     - name: Ensure DOCKER_HOST is set in .bashrc
       ansible.builtin.lineinfile:
         path: /home/{{ ansible_user_id }}/.bashrc
-        line: "export DOCKER_HOST=unix:///run/user/{{ ubtu22_docker_rootless_user }}/docker.sock"
+        line: "export DOCKER_HOST=unix:///run/user/{{ ansible_user_uid }}/docker.sock"
         state: present
         create: true
         mode: "0644"
       when: bashrc_docker_host_check.rc != 0
 
     - name: Check if lingering is enabled for the user
-      ansible.builtin.command: loginctl show-user {{ ubtu22_docker_rootless_user }} --property=Linger
+      ansible.builtin.command: loginctl show-user {{ ansible_user_id }} --property=Linger
       register: linger_status
       ignore_errors: true
       changed_when: false
 
     - name: Enable lingering for the user
-      ansible.builtin.command: loginctl enable-linger {{ ubtu22_docker_rootless_user }}
+      ansible.builtin.command: loginctl enable-linger {{ ansible_user_id }}
       when: linger_status.stdout != 'Linger=yes'
       changed_when: linger_status.stdout != 'Linger=yes'
 
     - name: Ensure the user directory docker service exists
       ansible.builtin.file:
-        path: /home/{{ ubtu22_docker_rootless_user }}/.config/systemd/user/docker.service.d
+        path: /home/{{ ansible_user_id }}/.config/systemd/user/docker.service.d
         state: directory
         mode: "0755"
 
     - name: Configure systemd override for user
       ansible.builtin.copy:
-        dest: /home/{{ ubtu22_docker_rootless_user }}/.config/systemd/user/docker.service.d/override.conf
+        dest: /home/{{ ansible_user_id }}/.config/systemd/user/docker.service.d/override.conf
         mode: "0644"
         content: |
           [Service]
@@ -187,7 +181,7 @@
     - name: Refresh env
       changed_when: true
       ansible.builtin.shell: |
-        . /home/{{ ubtu22_docker_rootless_user }}/.bashrc
+        . /home/{{ ansible_user_id }}/.bashrc
         exit 0
 
 - name: General (post) Docker
@@ -208,7 +202,7 @@
 
     - name: Ensure the directory for Portainer exists
       ansible.builtin.file:
-        path: /home/{{ ubtu22_docker_rootless_user }}/docker/portainer
+        path: /home/{{ ansible_user_id }}/docker/portainer
         state: directory
         mode: "0750"
 
@@ -217,10 +211,10 @@
         append_newline: true
         prepend_newline: true
         create: true
-        path: /home/{{ ubtu22_docker_rootless_user }}/docker/portainer/docker-compose.yml
+        path: /home/{{ ansible_user_id }}/docker/portainer/docker-compose.yml
         mode: "0640"
-        owner: "{{ ubtu22_docker_rootless_user }}"
-        group: "{{ ubtu22_docker_rootless_user }}"
+        owner: "{{ ansible_user_uid }}"
+        group: "{{ ansible_user_gid }}"
         content: |
           volumes:
             data:
@@ -254,7 +248,7 @@
     - name: Update Portainer EE
       when: not ubtu22_portainer_host
       ansible.builtin.blockinfile:
-        path: /home/{{ ubtu22_docker_rootless_user }}/docker/portainer/docker-compose.yml
+        path: /home/{{ ansible_user_id }}/docker/portainer/docker-compose.yml
         marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
         prepend_newline: true
         insertafter: "portainer:"
@@ -265,7 +259,7 @@
     - name: Update Portainer Agent
       when: not ubtu22_portainer_agent
       ansible.builtin.blockinfile:
-        path: /home/{{ ubtu22_docker_rootless_user }}/docker/portainer/docker-compose.yml
+        path: /home/{{ ansible_user_id }}/docker/portainer/docker-compose.yml
         marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
         prepend_newline: true
         insertafter: "agent:"
@@ -314,5 +308,5 @@
           when: ubtu22_docker_type == "rootless" and (ubtu22_portainer_agent or ubtu22_portainer_host) and not in_pipeline
           community.docker.docker_compose_v2:
             docker_host: unix://{{ docker_host }}
-            project_src: /home/{{ ubtu22_docker_rootless_user }}/docker/portainer
+            project_src: /home/{{ ansible_user_id }}/docker/portainer
             state: present
