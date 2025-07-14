@@ -144,7 +144,7 @@ ubtu22cis_bluetooth_mask: false
 ubtu22cis_sysctl_network_conf: /etc/sysctl.conf
 ubtu22cis_firewall_package: ufw
 ubtu22cis_ufw_use_sysctl: true
-ubtu22cis_ufw_allow_out_ports: 
+ubtu22cis_ufw_allow_out_ports:
   - 53
   - 80
   - 443
