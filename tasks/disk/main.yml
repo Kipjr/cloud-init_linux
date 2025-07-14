@@ -23,7 +23,9 @@
 
 # read info and reuse it in subsequent task
 - name: Read device info (always use unit when probing)
-  community.general.parted: device=/dev/sdb unit=MiB
+  community.general.parted: 
+    device: /dev/sdb 
+    unit: MiB
   register: sdb_info
 
 - name: Create a new XFS data partition
