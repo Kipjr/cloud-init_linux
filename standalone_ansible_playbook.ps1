@@ -26,6 +26,9 @@ $env:PATH="/home/adminuser/.local/bin:$env:PATH"
 python3 -m pip install --user ansible
 
 git clone $GitHubRepoUrl git_repo
+if (Test-Path -Path "$PSScriptRoot/defaults/main.yml") {
+    Copy-item -Path "$PSScriptRoot/defaults/main.yml" "${TMPDIR}/git_repo/defaults/main.yml"
+}
 Set-Location -Path "${TMPDIR}/git_repo"
 
 if (Test-Path -Path $PlaybookName) {
