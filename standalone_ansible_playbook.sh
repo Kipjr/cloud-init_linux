@@ -23,6 +23,9 @@ export -p PATH=/home/${USER}/.local/bin:$PATH
 python3 -m pip install --user ansible
 
 git clone "${GITHUB_REPO_URL}" git_repo
+if [ -f "$(dirname "$0")/defaults/main.yml" ]; then
+    cp "$(dirname "$0")/defaults/main.yml" "${TMPDIR}/git_repo/defaults/"
+fi
 cd "${TMPDIR}/git_repo"
 if [ -f "$PWD/${PLAYBOOK_NAME}" ]; then
     ansible-galaxy install -r collections/requirements.yml
