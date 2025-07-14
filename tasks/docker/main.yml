@@ -199,7 +199,6 @@
               {"base":"10.249.1.0/24","size":28}
             ]
           }
-
     - name: Ensure the directory for Portainer exists
       ansible.builtin.file:
         path: /home/{{ ansible_user_id }}/docker/portainer

@@ -22,10 +22,10 @@
 # mkfs.xfs [options] /dev/device
 
 # read info and reuse it in subsequent task
-- name: Read device information (always use unit when probing)
+- name: Read device info (always use unit when probing)
   community.general.parted:
-  unit: MiB
-  device: /dev/sdb
+    device: /dev/sdb
+    unit: MiB
   register: sdb_info
 
 - name: Create a new XFS data partition
