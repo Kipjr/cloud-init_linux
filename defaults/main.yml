@@ -128,13 +128,13 @@ ubtu22cis_screensaver_idle_delay: 900
 ubtu22cis_screensaver_lock_delay: 5
 ubtu22cis_time_sync_tool: systemd-timesyncd
 ubtu22cis_time_pool:
-  - name: time.nist.gov
+  - name: pool.ntp.org
     options: iburst maxsources 4
 ubtu22cis_time_servers:
   - name: 0.nl.pool.ntp.org
     options: iburst
   - name: 1.nl.pool.ntp.org
-  options: iburst
+    options: iburst
   - name: 2.nl.pool.ntp.org
     options: iburst
 ubtu22cis_ipv6_disable: grub
