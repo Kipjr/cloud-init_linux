@@ -13,11 +13,17 @@ Cloud-Init for Ubuntu Server
   "ansible_become_user": "root",
   "ansible_become_method": "sudo",
   "ubtu22_vm": true,
+  "ubtu22_run_task_disk": true,
+  "ubtu22_run_task_packages": true,
   "ubtu22_pkg_webmin": true,
   "ubtu22_pkg_snmp": true,
+  "ubtu22_run_task_docker": true
+  "ubtu22_docker_type": "rootless",
   "ubtu22_portainer_agent": true,
-  "ubtu22_runcis": false,
-  "ubtu22_portainer_host": true
+  "ubtu22_portainer_host": true,
+  "ubtu22_run_task_configuration": true,
+  "ubtu22_run_task_security": true,
+  "ubtu22_runcis": false
 }
 ```
 ### Use standalone (Installs Ansible and executes playbook)

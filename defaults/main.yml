@@ -137,6 +137,7 @@ ubtu22cis_time_servers:
     options: iburst
   - name: 2.nl.pool.ntp.org
     options: iburst
+
 ubtu22cis_ipv6_disable: grub
 ubtu22cis_install_network_manager: true
 ubtu22cis_bluetooth_service: false
@@ -144,10 +145,10 @@ ubtu22cis_bluetooth_mask: false
 ubtu22cis_sysctl_network_conf: /etc/sysctl.conf
 ubtu22cis_firewall_package: ufw
 ubtu22cis_ufw_use_sysctl: true
-ubtu22cis_ufw_allow_out_ports:
+ubtu22cis_ufw_allow_out_ports: 
   - 53
   - 80
-  - 443
+  - 443 
 ubtu22cis_sshd_default_log_level: INFO
 ubtu22cis_sshd_default_max_auth_tries: 4
 ubtu22cis_sshd_default_max_sessions: 8
@@ -155,15 +156,10 @@ ubtu22cis_sshd_default_login_grace_time: 60
 ubtu22cis_sshd_default_client_alive_interval: 300
 ubtu22cis_sshd_default_client_alive_count_max: 3
 ubtu22cis_sshd_default_ciphers:
-  - aes256-gcm@openssh.com
-  - aes128-gcm@openssh.com
-  - aes256-ctr
-  - aes192-ctr
-  - aes128-ctr
 ubtu22cis_sshd_default_macs:
   - hmac-sha1
   - hmac-sha2-256
-   - hmac-sha2-512
+  - hmac-sha2-512
 ubtu22cis_sshd_default_kex_algorithms:
   - ecdh-sha2-nistp256
   - ecdh-sha2-nistp384
