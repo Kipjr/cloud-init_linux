@@ -81,6 +81,7 @@
       - unattended-upgrades
       - pkg-config
       - powershell
+      - tripwire
     state: present
 
 - name: Install PWSH
