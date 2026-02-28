@@ -45,4 +45,15 @@ Cloud-Init for Ubuntu Server
 ### Use Raw:
 - `https://raw.githubusercontent.com/Kipjr/cloud-init_ubuntu/master/site.yml`
 
+# Recommended partition layout 
+| Mount Point      | Size               | Filesystem (Recommended) | Remarks                                                                                                  |
+| ---------------- | ------------------ | ------------------------ | -------------------------------------------------------------------------------------------------------- |
+| `/`              | 32 GB              | ext4                     | Root filesystem. Sufficient for base OS, packages, updates.                                              |
+| `/home`          | 8 GB               | ext4                     | User data isolation.                                                                                     |
+| `/var`           | 8 GB               | ext4                     | Variable state data. Logs excluded. Monitor space usage.                                                 |
+| `/var/log`       | 8 GB               | ext4                     | Log isolation to prevent root exhaustion.                                                                |
+| `/var/log/audit` | 4 GB               | ext4                     | Dedicated audit trail partition (auditd). Prevents log flooding impact.                                  |
+| `/var/tmp`       | 1 GB               | ext4                     | Persistent temp storage across reboots.                                                                  |
+| `/tmp`           | 1 GB               | ext4 or tmpfs            | Ephemeral temp storage. Prefer `tmpfs` if RAM allows.                                                    |
+| `/opt/data`      | x GB + remainder   | ext4 or XFS              | Primary persistent data storage.                                                                         |
 
