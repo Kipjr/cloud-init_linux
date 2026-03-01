@@ -15,10 +15,12 @@
       }}
 
 - name: Update apt cache
+  become: true
   ansible.builtin.apt:
     update_cache: true
 
 - name: Install required packages
+  become: true
   ansible.builtin.apt:
     name:
       - ca-certificates
@@ -26,12 +28,14 @@
     state: present
 
 - name: Ensure keyring directory exists
+  become: true
   ansible.builtin.file:
     path: /etc/apt/keyrings
     state: directory
     mode: "0755"
 
 - name: Download Docker GPG key
+  become: true
   ansible.builtin.get_url:
     url: "{{ docker_gpg_url }}"
     dest: /etc/apt/keyrings/docker.asc
@@ -39,6 +43,7 @@
     force: true
 
 - name: Configure Docker apt source
+  become: true
   ansible.builtin.copy:
     dest: /etc/apt/sources.list.d/docker.sources
     mode: "0644"
