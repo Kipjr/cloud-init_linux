@@ -1,6 +1,6 @@
 ---
 
-- name: Ubuntu Installer
+- name: Linux Installer
   hosts: all
   gather_facts: true
   environment:
