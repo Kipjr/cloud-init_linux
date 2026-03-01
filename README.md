@@ -1,7 +1,13 @@
-# cloud-init_ubuntu
-[![Ansible](https://github.com/Kipjr/cloud-init_ubuntu/actions/workflows/ansible.yml/badge.svg)](https://github.com/Kipjr/cloud-init_ubuntu/actions/workflows/ansible.yml)
+# cloud-init_linux
+[![Ansible](https://github.com/Kipjr/cloud-init_linux/actions/workflows/ansible.yml/badge.svg)](https://github.com/Kipjr/cloud-init_linux/actions/workflows/ansible.yml)
 
-Cloud-Init for Ubuntu Server
+Cloud-Init for
+
+`Ubuntu 24.04 LTS 	Noble Numbat (trixie 13)`
+
+`Ubuntu 22.04 LTS 	Jammy Jellyfish (bookworm 12)`
+
+`Debian 13 (trixie)`
 
 # Usage
 
@@ -12,6 +18,7 @@ Cloud-Init for Ubuntu Server
 {
   "ansible_become_user": "root",
   "ansible_become_method": "sudo",
+
   "ubtu22_vm": true,
   "ubtu22_run_task_disk": true,
   "ubtu22_run_task_packages": true,
@@ -23,7 +30,34 @@ Cloud-Init for Ubuntu Server
   "ubtu22_portainer_host": true,
   "ubtu22_run_task_configuration": true,
   "ubtu22_run_task_security": true,
-  "ubtu22_runcis": false
+  "ubtu22_runcis": false,
+
+  "ubtu24_vm": true,
+  "ubtu24_run_task_disk": true,
+  "ubtu24_run_task_packages": true,
+  "ubtu24_pkg_webmin": true,
+  "ubtu24_pkg_snmp": true,
+  "ubtu24_run_task_docker": true
+  "ubtu24_docker_type": "rootless",
+  "ubtu24_portainer_agent": true,
+  "ubtu24_portainer_host": true,
+  "ubtu24_run_task_configuration": true,
+  "ubtu24_run_task_security": true,
+  "ubtu24_runcis": false,
+
+  "debian13_vm": true,
+  "debian13_run_task_disk": true,
+  "debian13_run_task_packages": true,
+  "debian13_pkg_webmin": true,
+  "debian13_pkg_snmp": true,
+  "debian13_run_task_docker": true
+  "debian13_docker_type": "rootless",
+  "debian13_portainer_agent": true,
+  "debian13_portainer_host": true,
+  "debian13_run_task_configuration": true,
+  "debian13_run_task_security": true,
+  "debian13_runcis": false
+
 }
 ```
 ### Use standalone (Installs Ansible and executes playbook)
@@ -33,8 +67,12 @@ Cloud-Init for Ubuntu Server
 ### Use with Proxmox Cloud-Init: 
 - Build template
   - Do stuff..
-  - Use `https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img` as base image.
-    - Resize image`qemu-img resize jammy-server-cloudimg-amd64.img 8G`
+  - Use as base image:
+    - `https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img`
+    - `https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img`
+    - Resize image:
+      - `qemu-img resize jammy-server-cloudimg-amd64.img 8G`
+      - `qemu-img resize noble-server-cloudimg-amd64.img 8G`
 - Execute somewhere `./proxmox/new_ci-config.sh`
 - Store 'ci-config-userdata.yaml' in Proxmox Snippets
 - Store 'ci-config-vendor.yaml' in Proxmox Snippets
@@ -43,7 +81,7 @@ Cloud-Init for Ubuntu Server
   - `qm set <vmid> --cicustom "vendor=local:snippets/ci-config-vendor.yaml"`
 
 ### Use Raw:
-- `https://raw.githubusercontent.com/Kipjr/cloud-init_ubuntu/master/site.yml`
+- `https://raw.githubusercontent.com/Kipjr/cloud-init_linux/master/site.yml`
 
 # Recommended partition layout 
 | Mount Point      | Size               | Filesystem (Recommended) | Remarks                                                                                                  |
