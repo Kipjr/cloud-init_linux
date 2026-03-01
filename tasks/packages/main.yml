@@ -74,7 +74,6 @@
       - apt-transport-https
       - ca-certificates
       - libssl-dev
-      - software-properties-common
       - openssh-server
       - uidmap
       - dbus-user-session
