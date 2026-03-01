@@ -180,10 +180,21 @@
 
     - name: Check if DOCKER_HOST is set in .bashrc
       when: docker_type == "rootless"
-      ansible.builtin.command: grep -q 'export DOCKER_HOST=unix:///run/user/{{ ansible_facts['user_uid'] }}/docker.sock' /home/{{ ansible_facts['user_id'] }}/.bashrc
-      register: bashrc_docker_host_check
-      ignore_errors: true
-      changed_when: false
+      ansible.builtin.lineinfile:
+        path: "/home/{{ ansible_facts['user_id'] }}/.bashrc"
+        line: "export DOCKER_HOST=unix:///run/user/{{ ansible_facts['user_uid'] }}/docker.sock"
+        state: present
+     register: bashrc_docker_host_check
+     ignore_errors: true
+     changed_when: false
+
+#    - name: Check if DOCKER_HOST is set in .bashrc
+#      when: docker_type == "rootless"
+#      ansible.builtin.command: | 
+#        grep -q 'export DOCKER_HOST=unix:///run/user/{{ ansible_facts['user_uid'] }}/docker.sock' /home/{{ ansible_facts['user_id'] }}/.bashrc
+#      register: bashrc_docker_host_check
+#      ignore_errors: true
+#      changed_when: false
 
     - name: Ensure DOCKER_HOST is set in .bashrc
       ansible.builtin.lineinfile:
