@@ -1,16 +1,53 @@
 ---
-- name: Add Docker official GPG key
-  become: true
-  ansible.builtin.apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
+
+- name: Ensure supported distribution
+  ansible.builtin.assert:
+    that:
+      - ansible_facts['distribution'] in ['Debian', 'Ubuntu']
+
+- name: Set Docker repo variables
+  ansible.builtin.set_fact:
+    docker_repo_base: "https://download.docker.com/linux/{{ ansible_facts['distribution'] | lower }}"
+    docker_gpg_url: "https://download.docker.com/linux/{{ ansible_facts['distribution'] | lower }}/gpg"
+    docker_codename: >-
+      {{
+        ansible_facts['distribution_release']
+      }}
+
+- name: Update apt cache
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Install required packages
+  ansible.builtin.apt:
+    name:
+      - ca-certificates
+      - curl
     state: present
 
-- name: Add Docker repository
-  become: true
-  ansible.builtin.apt_repository:
-    repo: "deb https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
-    filename: docker
-    state: present
+- name: Ensure keyring directory exists
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: "0755"
+
+- name: Download Docker GPG key
+  ansible.builtin.get_url:
+    url: "{{ docker_gpg_url }}"
+    dest: /etc/apt/keyrings/docker.asc
+    mode: "0644"
+    force: true
+
+- name: Configure Docker apt source
+  ansible.builtin.copy:
+    dest: /etc/apt/sources.list.d/docker.sources
+    mode: "0644"
+    content: |
+      Types: deb
+      URIs: {{ docker_repo_base }}
+      Suites: {{ docker_codename }}
+      Components: stable
+      Signed-By: /etc/apt/keyrings/docker.asc
 
 - name: Ensure all packages are up to date
   become: true
@@ -62,7 +99,7 @@
     exit 0
 
 - name: Rootfull Docker
-  when: ubtu22_docker_type == "rootfull"
+  when: docker_type == "rootfull"
   block:
     - name: Set variables
       ansible.builtin.set_fact:
@@ -71,7 +108,7 @@
         docker_daemon_conf: /etc/docker/daemon.json
 
 - name: Rootless Docker
-  when: ubtu22_docker_type == "rootless"
+  when: docker_type == "rootless"
   block:
     - name: Set variables
       ansible.builtin.set_fact:
@@ -111,7 +148,7 @@
         state: absent
 
     - name: Install Docker (rootless, using systemd)
-      when: not file_check_docker_rootless.stat.exists and ubtu22_docker_type == "rootless"
+      when: not file_check_docker_rootless.stat.exists and docker_type == "rootless"
       environment:
         XDG_RUNTIME_DIR: "/run/user/{{ ansible_user_uid }}"
         DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ ansible_user_uid }}/bus"
@@ -137,7 +174,7 @@
       when: bashrc_path_usr_bin_check.rc != 0
 
     - name: Check if DOCKER_HOST is set in .bashrc
-      when: ubtu22_docker_type == "rootless"
+      when: docker_type == "rootless"
       ansible.builtin.command: grep -q 'export DOCKER_HOST=unix:///run/user/{{ ansible_user_uid }}/docker.sock' /home/{{ ansible_user_id }}/.bashrc
       register: bashrc_docker_host_check
       ignore_errors: true
@@ -245,7 +282,7 @@
                 - "9443:9443"
 
     - name: Update Portainer EE
-      when: not ubtu22_portainer_host
+      when: not portainer_host
       ansible.builtin.blockinfile:
         path: /home/{{ ansible_user_id }}/docker/portainer/docker-compose.yml
         marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
@@ -256,7 +293,7 @@
             - host
 
     - name: Update Portainer Agent
-      when: not ubtu22_portainer_agent
+      when: not portainer_agent
       ansible.builtin.blockinfile:
         path: /home/{{ ansible_user_id }}/docker/portainer/docker-compose.yml
         marker: "<!-- {mark} ANSIBLE MANAGED BLOCK -->"
@@ -270,7 +307,7 @@
       when: not in_pipeline
       block:
         - name: Run the Docker service
-          when: ubtu22_docker_type == "rootless"
+          when: docker_type == "rootless"
           ansible.builtin.systemd:
             name: docker
             enabled: true
@@ -278,7 +315,7 @@
             scope: user
 
         - name: Run the Docker service
-          when: ubtu22_docker_type == "rootfull" and not in_pipeline
+          when: docker_type == "rootfull" and not in_pipeline
           ansible.builtin.systemd:
             name: docker
             enabled: true
@@ -304,7 +341,7 @@
                 gateway: 192.168.224.129
 
         - name: Start Docker Portainer
-          when: ubtu22_docker_type == "rootless" and (ubtu22_portainer_agent or ubtu22_portainer_host) and not in_pipeline
+          when: docker_type == "rootless" and (portainer_agent or portainer_host) and not in_pipeline
           community.docker.docker_compose_v2:
             docker_host: unix://{{ docker_host }}
             project_src: /home/{{ ansible_user_id }}/docker/portainer
