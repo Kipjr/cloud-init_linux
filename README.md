@@ -7,7 +7,9 @@ Cloud-Init for
 
 `Ubuntu 22.04 LTS 	Jammy Jellyfish (bookworm 12)`
 
-`Debian 13 (trixie)`
+`Debian 12 (bookworm)`
+
+_~Debian 13 (trixie)~ - When available on ansible-lockdown.._
 
 # Usage
 
@@ -45,18 +47,18 @@ Cloud-Init for
   "ubtu24_run_task_security": true,
   "ubtu24_runcis": false,
 
-  "debian13_vm": true,
-  "debian13_run_task_disk": true,
-  "debian13_run_task_packages": true,
-  "debian13_pkg_webmin": true,
-  "debian13_pkg_snmp": true,
-  "debian13_run_task_docker": true
-  "debian13_docker_type": "rootless",
-  "debian13_portainer_agent": true,
-  "debian13_portainer_host": true,
-  "debian13_run_task_configuration": true,
-  "debian13_run_task_security": true,
-  "debian13_runcis": false
+  "debian12_vm": true,
+  "debian12_run_task_disk": true,
+  "debian12_run_task_packages": true,
+  "debian12_pkg_webmin": true,
+  "debian12_pkg_snmp": true,
+  "debian12_run_task_docker": true
+  "debian12_docker_type": "rootless",
+  "debian12_portainer_agent": true,
+  "debian12_portainer_host": true,
+  "debian12_run_task_configuration": true,
+  "debian12_run_task_security": true,
+  "debian12_runcis": false
 
 }
 ```
