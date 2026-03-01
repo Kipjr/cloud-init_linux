@@ -70,17 +70,17 @@
 
           # Do not use boot password
         ubtu24cis_ask_passwd_to_boot: false
-        #ubtu24cis_rule_1_4_3: false
+        # ubtu24cis_rule_1_4_3: false
           # Do not patch UFW to do default deny
-        #ubtu24cis_rule_3_5_1_7: false
+        # ubtu24cis_rule_3_5_1_7: false
           # Takes alot of time: Ensure no unowned files or directories exist | Set unowned files/directories to configured owner
-        #ubtu24cis_rule_6_1_10: false
+        # ubtu24cis_rule_6_1_10: false
           # Takes alot of time: Ensure no ungrouped files or directories exist | Get ungrouped files or directories
-        #ubtu24cis_rule_6_1_11: false
+        # ubtu24cis_rule_6_1_11: false
           # Takes alot of time: Audit SUID executables | Find SUID executables
-        #ubtu24cis_rule_6_1_12: false
+        # ubtu24cis_rule_6_1_12: false
          # Takes alot of time: Audit SGID executables | Find SGID executables
-        #ubtu24cis_rule_6_1_13: false
+        # ubtu24cis_rule_6_1_13: false
 
         ###
         ### CIS Level 2
@@ -88,15 +88,15 @@
           # keep squashfs
         #ubtu24cis_rule_1_1_1_2: false
           # Disable AppArmor enforcement
-        #ubtu24cis_rule_1_6_1_4: false
+        # ubtu24cis_rule_1_6_1_4: false
         ubtu24cis_apparmor_disable: true
         ubtu24cis_apparmor_mode: "complain"
           # enable audit logs auto delete"
-        #ubtu24cis_rule_4_1_2_2: false
+        # ubtu24cis_rule_4_1_2_2: false
           # disable system disabling when audit logs are full"
-        #ubtu24cis_rule_4_1_2_3: false
+        # ubtu24cis_rule_4_1_2_3: false
           # breaks sudo during remediation: Ensure users must provide password for escalation
-        #ubtu24cis_rule_5_3_4: false
+        # ubtu24cis_rule_5_3_4: false
 
         ###
         ### Generic
@@ -124,33 +124,33 @@
 
           # Do not use boot password
         deb12cis_ask_passwd_to_boot: false
-        #deb12cis_rule_1_4_3: false
+        # deb12cis_rule_1_4_3: false
           # Do not patch UFW to do default deny
-        #deb12cis_rule_3_5_1_7: false
+        # deb12cis_rule_3_5_1_7: false
           # Takes alot of time: Ensure no unowned files or directories exist | Set unowned files/directories to configured owner
-        #deb12cis_rule_6_1_10: false
+        # deb12cis_rule_6_1_10: false
           # Takes alot of time: Ensure no ungrouped files or directories exist | Get ungrouped files or directories
-        #deb12cis_rule_6_1_11: false
+        # deb12cis_rule_6_1_11: false
           # Takes alot of time: Audit SUID executables | Find SUID executables
-        #deb12cis_rule_6_1_12: false
+        # deb12cis_rule_6_1_12: false
          # Takes alot of time: Audit SGID executables | Find SGID executables
-        #deb12cis_rule_6_1_13: false
+        # deb12cis_rule_6_1_13: false
 
         ###
         ### CIS Level 2
         ###
           # keep squashfs
-        #deb12cis_rule_1_1_1_2: false
+        # deb12cis_rule_1_1_1_2: false
           # Disable AppArmor enforcement
-        #deb12cis_rule_1_6_1_4: false
+        # deb12cis_rule_1_6_1_4: false
         deb12cis_apparmor_disable: true
         deb12cis_apparmor_mode: "complain"
           # enable audit logs auto delete"
-        #deb12cis_rule_4_1_2_2: false
+        # deb12cis_rule_4_1_2_2: false
           # disable system disabling when audit logs are full"
-        #deb12cis_rule_4_1_2_3: false
+        # deb12cis_rule_4_1_2_3: false
           # breaks sudo during remediation: Ensure users must provide password for escalation
-        #deb12cis_rule_5_3_4: false
+        # deb12cis_rule_5_3_4: false
 
         ###
         ### Generic
@@ -178,34 +178,34 @@
         deb13cis_level_2: false
 
           # Do not use boot password
-        #deb13cis_ask_passwd_to_boot: false
-        #deb13cis_rule_1_4_3: false
+        deb13cis_ask_passwd_to_boot: false
+        # deb13cis_rule_1_4_3: false
           # Do not patch UFW to do default deny
-        #deb13cis_rule_3_5_1_7: false
+        # deb13cis_rule_3_5_1_7: false
           # Takes alot of time: Ensure no unowned files or directories exist | Set unowned files/directories to configured owner
-        #deb13cis_rule_6_1_10: false
+        # deb13cis_rule_6_1_10: false
           # Takes alot of time: Ensure no ungrouped files or directories exist | Get ungrouped files or directories
-        #deb13cis_rule_6_1_11: false
+        # deb13cis_rule_6_1_11: false
           # Takes alot of time: Audit SUID executables | Find SUID executables
-        #deb13cis_rule_6_1_12: false
+        # deb13cis_rule_6_1_12: false
          # Takes alot of time: Audit SGID executables | Find SGID executables
-        #deb13cis_rule_6_1_13: false
+        # deb13cis_rule_6_1_13: false
 
         ###
         ### CIS Level 2
         ###
           # keep squashfs
-        #deb13cis_rule_1_1_1_2: false
+        # deb13cis_rule_1_1_1_2: false
           # Disable AppArmor enforcement
-        #deb13cis_rule_1_6_1_4: false
-        #deb13cis_apparmor_disable: true
-        #deb13cis_apparmor_mode: "complain"
+        # deb13cis_rule_1_6_1_4: false
+        deb13cis_apparmor_disable: true
+        deb13cis_apparmor_mode: "complain"
           # enable audit logs auto delete"
-        #deb13cis_rule_4_1_2_2: false
+        # deb13cis_rule_4_1_2_2: false
           # disable system disabling when audit logs are full"
-        #deb13cis_rule_4_1_2_3: false
+        # deb13cis_rule_4_1_2_3: false
           # breaks sudo during remediation: Ensure users must provide password for escalation
-        #deb13cis_rule_5_3_4: false
+        # deb13cis_rule_5_3_4: false
 
         ###
         ### Generic
