@@ -15,6 +15,13 @@ deb12_run_task_packages: true
 deb12_run_task_security: true
 deb12_runcis: false
 
+deb13_run_task_configuration: true
+deb13_run_task_disk: false
+deb13_run_task_docker: false
+deb13_run_task_packages: true
+deb13_run_task_security: true
+deb13_runcis: false
+
 ubtu22_run_task_configuration: true
 ubtu22_run_task_disk: true
 ubtu22_run_task_docker: true
