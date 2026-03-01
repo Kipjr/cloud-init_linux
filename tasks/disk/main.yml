@@ -74,7 +74,7 @@
 #########################################################
 
 - name: Set partition suffix rule
-  set_fact:
+  ansible.builtin.set_fact:
     part_suffix: >-
       {{
         'p' if largest_disk is search('^nvme|^mmcblk') else ''
