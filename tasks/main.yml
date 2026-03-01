@@ -23,7 +23,7 @@
   ansible.builtin.include_tasks: debian13.yml
   when:
     - ansible_facts['distribution'] == "Debian"
-    - ansible_facts['distribution_version'] is version("13", "==")
+    - ansible_facts['distribution_version'] is version("13.3", "==")
 
 - name: Include Ubuntu 22.04 tasks
   ansible.builtin.include_tasks: ubuntu2204.yml
