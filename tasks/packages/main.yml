@@ -2,7 +2,7 @@
 
 - name: Download the Microsoft repository key file
   ansible.builtin.get_url:
-    url: "https://packages.microsoft.com/config/{{ ansible_facts['distribution'] }}/{{ ansible_facts['distribution_major_version']  }}/packages-microsoft-prod.deb"
+    url: "https://packages.microsoft.com/config/{{ ansible_facts['distribution'] | lower }}/{{ ansible_facts['distribution_major_version']  }}/packages-microsoft-prod.deb"
     dest: "/tmp/packages-microsoft-prod.deb"
     mode: "0644"
 
