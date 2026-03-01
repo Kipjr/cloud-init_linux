@@ -14,7 +14,7 @@
     state: present
 
 - name: Detect candidate block devices
-  set_fact:
+  ansible.legacy.set_fact:
     candidate_disks: >-
       {{
         ansible_facts.devices
@@ -27,7 +27,7 @@
       }}
 
 - name: Build disk size map (GB numeric)
-  set_fact:
+  ansible.legacy.set_fact:
     disk_sizes: >-
       {{
         dict(candidate_disks | zip(
@@ -40,13 +40,13 @@
       }}
 
 - name: Sort disks by size
-  set_fact:
+  ansible.legacy.set_fact:
     sorted_disks: "{{ disk_sizes | dict2items | sort(attribute='value') | map(attribute='key') | list }}"
     disk_count: "{{ sorted_disks | length }}"
 
 - name: Detect root source device
-  set_fact:
-    root_device: "{{ ansible_facts.mounts | selectattr('mount','equalto','/') | map(attribute='device') | first }}"
+  ansible.legacy.set_fact:
+    root_device: "{{ ansible_facts.mounts | selectattr('mount', 'equalto', '/') | map(attribute='device') | first }}"
     root_online: "{{ (ansible_facts.mounts | selectattr('mount','equalto','/') | list | length) > 0 }}"
 
 #########################################################
@@ -54,7 +54,7 @@
 #########################################################
 
 - name: Skip disk changes (single disk with active root)
-  meta: end_play
+  ansible.legacy.meta: end_play
   when:
     - disk_count == 1
     - root_online | bool
@@ -101,7 +101,7 @@
   when: disk_count >= 2
 
 - name: Create XFS filesystem for data
-  ansible.builtin.filesystem:
+  community.general.filesystem:
     fstype: xfs
     dev: "/dev/{{ largest_disk }}{{ part_suffix }}1"
   when: disk_count >= 2
@@ -119,7 +119,7 @@
 #########################################################
 
 - name: Set log partition suffix
-  set_fact:
+  ansible.builtin.set_fact:
     log_suffix: >-
       {{
         'p' if smallest_disk is search('^nvme|^mmcblk') else ''
@@ -142,7 +142,7 @@
   when: disk_count == 3
 
 - name: Create ext4 for /var/log
-  ansible.builtin.filesystem:
+  community.general.filesystem:
     fstype: ext4
     dev: "/dev/{{ smallest_disk }}{{ log_suffix }}1"
   when: disk_count == 3
