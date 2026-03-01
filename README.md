@@ -47,18 +47,18 @@ _~Debian 13 (trixie)~ - When available on ansible-lockdown.._
   "ubtu24_run_task_security": true,
   "ubtu24_runcis": false,
 
-  "debian12_vm": true,
-  "debian12_run_task_disk": true,
-  "debian12_run_task_packages": true,
-  "debian12_pkg_webmin": true,
-  "debian12_pkg_snmp": true,
-  "debian12_run_task_docker": true
-  "debian12_docker_type": "rootless",
-  "debian12_portainer_agent": true,
-  "debian12_portainer_host": true,
-  "debian12_run_task_configuration": true,
-  "debian12_run_task_security": true,
-  "debian12_runcis": false
+  "deb12_vm": true,
+  "deb12_run_task_disk": true,
+  "deb12_run_task_packages": true,
+  "deb12_pkg_webmin": true,
+  "deb12_pkg_snmp": true,
+  "deb12_run_task_docker": true
+  "deb12_docker_type": "rootless",
+  "deb12_portainer_agent": true,
+  "deb12_portainer_host": true,
+  "deb12_run_task_configuration": true,
+  "deb12_run_task_security": true,
+  "deb12_runcis": false
 
 }
 ```
