@@ -82,7 +82,7 @@
     state: present
 
 - name: Install PWSH
-  when: msprod.stat.exists and architecture == "amd64"
+  when: msprod.stat.exists and ansible_facts['architecture'] == "amd64"
   become: true
   ansible.builtin.apt:
     name:
