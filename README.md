@@ -20,16 +20,16 @@ _~Debian 13 (trixie)~ - When available on ansible-lockdown.._
 {
   "ansible_become_user": "root",
   "ansible_become_method": "sudo",
+  "docker_type": "rootless",
+  "portainer_agent": true,
+  "portainer_host": true,
 
   "ubtu22_vm": true,
   "ubtu22_run_task_disk": true,
   "ubtu22_run_task_packages": true,
   "ubtu22_pkg_webmin": true,
   "ubtu22_pkg_snmp": true,
-  "ubtu22_run_task_docker": true
-  "ubtu22_docker_type": "rootless",
-  "ubtu22_portainer_agent": true,
-  "ubtu22_portainer_host": true,
+  "ubtu22_run_task_docker": true,
   "ubtu22_run_task_configuration": true,
   "ubtu22_run_task_security": true,
   "ubtu22_runcis": false,
@@ -40,9 +40,6 @@ _~Debian 13 (trixie)~ - When available on ansible-lockdown.._
   "ubtu24_pkg_webmin": true,
   "ubtu24_pkg_snmp": true,
   "ubtu24_run_task_docker": true
-  "ubtu24_docker_type": "rootless",
-  "ubtu24_portainer_agent": true,
-  "ubtu24_portainer_host": true,
   "ubtu24_run_task_configuration": true,
   "ubtu24_run_task_security": true,
   "ubtu24_runcis": false,
@@ -53,9 +50,6 @@ _~Debian 13 (trixie)~ - When available on ansible-lockdown.._
   "deb12_pkg_webmin": true,
   "deb12_pkg_snmp": true,
   "deb12_run_task_docker": true
-  "deb12_docker_type": "rootless",
-  "deb12_portainer_agent": true,
-  "deb12_portainer_host": true,
   "deb12_run_task_configuration": true,
   "deb12_run_task_security": true,
   "deb12_runcis": false
