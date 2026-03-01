@@ -1,7 +1,7 @@
 #!/usr/bin/env pwsh
 
 param (
-    [Parameter(Position=0)][string]$GitHubRepoUrl = "https://github.com/Kipjr/cloud-init_ubuntu",
+    [Parameter(Position=0)][string]$GitHubRepoUrl = "https://github.com/Kipjr/cloud-init_linux",
     [Parameter(Position=1)][string]$PlaybookName = "site.yml",
     [Parameter(Position=2)][string]$WorkingDir = "/tmp",
     [Parameter(Position=3)][string]$AnsibleArg
