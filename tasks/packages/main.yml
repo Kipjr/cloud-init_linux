@@ -34,7 +34,7 @@
   register: webmin_repo_download
   ignore_errors: true
   when:
-    - ubtu22_pkg_webmin
+    - pkg_webmin
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/webmin/webmin/master/setup-repos.sh
     dest: /tmp/setup-repos.sh
@@ -42,7 +42,7 @@
 
 - name: Configure Webmin Repo
   when:
-    - ubtu22_pkg_webmin
+    - pkg_webmin
     - webmin_repo_download.state == "file"
   become: true
   args:
@@ -94,7 +94,7 @@
 
 - name: Install Webmin
   when:
-    - ubtu22_pkg_webmin
+    - pkg_webmin
   become: true
   ansible.builtin.apt:
     name:
@@ -103,7 +103,7 @@
 
 - name: Install hardware packages
   when:
-    - not ubtu22_vm
+    - not vm
   become: true
   ansible.builtin.apt:
     name:
@@ -113,7 +113,7 @@
 
 - name: Install SNMP
   when:
-    - ubtu22_pkg_snmp
+    - pkg_snmp
   become: true
   ansible.builtin.apt:
     name:
