@@ -4,7 +4,7 @@
   when: ansible_fqdn is defined and ansible_fqdn | length <= 32
   become: true
   ansible.builtin.hostname:
-    name: "{{ ansible_fqdn }}"
+    name: "{{ ansible_facts['fqdn'] }}"
 
 - name: Set timezone to Europe/Amsterdam
   become: true
@@ -28,29 +28,29 @@
 
 - name: Create ~/.ssh if not exist
   ansible.builtin.file:
-    path: /home/{{ ansible_user_id }}/.ssh
-    owner: "{{ ansible_user_id }}"
+    path: /home/{{ ansible_facts['user_id'] }}/.ssh
+    owner: "{{ ansible_facts['user_id'] }}"
     state: directory
     mode: "0700"
 
 - name: Check if SSH private key already exists
   ansible.builtin.stat:
-    path: /home/{{ ansible_user_id }}/.ssh/id_rsa
+    path: /home/{{ ansible_facts['user_id'] }}/.ssh/id_rsa
   register: file_private_key
 
 - name: Generate SSH private and public keys
   when: not file_private_key.stat.exists
   community.crypto.openssh_keypair:
-    path: /home/{{ ansible_user_id }}/.ssh/id_rsa
+    path: /home/{{ ansible_facts['user_id'] }}/.ssh/id_rsa
     type: ed25519
-    owner: "{{ ansible_user_id }}"
+    owner: "{{ ansible_facts['user_id'] }}"
     mode: '0600'
   register: ssh_keypair
 
 - name: Add SSH public key to authorized_keys
   when: not file_private_key.stat.exists
   ansible.posix.authorized_key:
-    user: "{{ ansible_user_id }}"
+    user: "{{ ansible_facts['user_id'] }}"
     key: "{{ ssh_keypair.public_key }}"
 
 - name: Disable SSH password authentication
