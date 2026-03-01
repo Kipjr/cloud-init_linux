@@ -64,7 +64,7 @@
 #########################################################
 
 - name: Assign disk roles
-  set_fact:
+  ansible.builtin.set_fact:
     smallest_disk: "{{ sorted_disks[0] }}"
     largest_disk: "{{ sorted_disks[-1] }}"
   when: disk_count >= 2
