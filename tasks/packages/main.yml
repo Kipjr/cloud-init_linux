@@ -7,7 +7,7 @@
       {% if ansible_facts.distribution == "Debian" %}
       debian/{{ ansible_facts['distribution_major_version'] }}
       {% elif ansible_facts.distribution == "Ubuntu" %}
-      ubuntu/{{ ansible_facts['distribution_major_version'] }}
+      ubuntu/{{ ansible_facts['distribution_version'] }}
       {% else %}
       unsupported
       {% endif %}
