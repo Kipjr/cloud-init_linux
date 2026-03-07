@@ -1,0 +1,34 @@
+---
+- name: Debian 12 specific task
+  ansible.builtin.debug:
+    msg: "Running tasks for Debian 12"
+
+- name: Disk Configuration
+  when: deb12_run_task_disk
+  ansible.builtin.import_tasks: packages/main.yml
+  tags:
+    - packages
+
+- name: Packages
+  when: deb12_run_task_packages
+  ansible.builtin.import_tasks: packages/main.yml
+  tags:
+    - packages
+
+- name: Docker
+  when: deb12_run_task_docker
+  ansible.builtin.import_tasks: docker/main.yml
+  tags:
+    - docker
+
+- name: Configuration
+  when: deb12_run_task_configuration
+  ansible.builtin.import_tasks: configuration/main.yml
+  tags:
+    - configure
+
+- name: Security
+  when: deb12_run_task_security
+  ansible.builtin.import_tasks: security/main.yml
+  tags:
+    - security

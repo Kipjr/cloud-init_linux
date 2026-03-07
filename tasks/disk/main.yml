@@ -13,35 +13,144 @@
       - quota
     state: present
 
-# sudo modprobe -v xfs
+- name: Detect candidate block devices
+  ansible.legacy.set_fact:
+    candidate_disks: >-
+      {{
+        ansible_facts.devices
+        | dict2items
+        | rejectattr('key', 'search', '^(loop|ram|sr|dm-)')
+        | selectattr('value.removable', 'equalto', '0')
+        | selectattr('value.size', 'defined')
+        | map(attribute='key')
+        | list
+      }}
 
-# fdisk -l
-# Disk /dev/xvda: 40 GiB, 42949672960 bytes, 83886080 sectors
-# Disk /dev/xvdf: 400 GiB, 429496729600 bytes, 838860800 sectors
+- name: Build disk size map (GB numeric)
+  ansible.legacy.set_fact:
+    disk_sizes: >-
+      {{
+        dict(candidate_disks | zip(
+          candidate_disks
+          | map('extract', ansible_facts.devices)
+          | map(attribute='size')
+          | map('regex_replace','[^0-9.]','')
+          | map('float')
+        ))
+      }}
 
-# mkfs.xfs [options] /dev/device
+- name: Sort disks by size
+  ansible.legacy.set_fact:
+    sorted_disks: "{{ disk_sizes | dict2items | sort(attribute='value') | map(attribute='key') | list }}"
+    disk_count: "{{ sorted_disks | length }}"
 
-# read info and reuse it in subsequent task
-- name: Read device info (always use unit when probing)
+- name: Detect root source device
+  ansible.legacy.set_fact:
+    root_device: "{{ ansible_facts.mounts | selectattr('mount', 'equalto', '/') | map(attribute='device') | first }}"
+    root_online: "{{ (ansible_facts.mounts | selectattr('mount','equalto','/') | list | length) > 0 }}"
+
+#########################################################
+# CASE 1: Single disk + online root → SKIP
+#########################################################
+
+- name: Skip disk changes (single disk with active root)
+  ansible.legacy.meta: end_play
+  when:
+    - disk_count == 1
+    - root_online | bool
+
+#########################################################
+# Disk role assignment
+#########################################################
+
+- name: Assign disk roles
+  ansible.builtin.set_fact:
+    smallest_disk: "{{ sorted_disks[0] }}"
+    largest_disk: "{{ sorted_disks[-1] }}"
+  when: disk_count >= 2
+
+#########################################################
+# Helper: partition suffix handling
+#########################################################
+
+- name: Set partition suffix rule
+  ansible.builtin.set_fact:
+    part_suffix: >-
+      {{
+        'p' if largest_disk is search('^nvme|^mmcblk') else ''
+      }}
+  when: disk_count >= 2
+
+#########################################################
+# 2 DISKS → DATA ONLY
+#########################################################
+
+- name: Ensure GPT label on largest disk
   community.general.parted:
-    device: /dev/sdb
-    unit: MiB
-  register: sdb_info
-
-- name: Create a new XFS data partition
-  community.general.parted:
-    device: /dev/sdb
+    device: "/dev/{{ largest_disk }}"
     label: gpt
-    name: data
+  when: disk_count >= 2
+
+- name: Create data partition (64G at start)
+  community.general.parted:
+    device: "/dev/{{ largest_disk }}"
     number: 1
     state: present
-    fs_type: xfs
+    part_start: 1MiB
+    part_end: 64G
+  when: disk_count >= 2
 
-- name: Create a new log partition
+- name: Create XFS filesystem for data
+  community.general.filesystem:
+    fstype: xfs
+    dev: "/dev/{{ largest_disk }}{{ part_suffix }}1"
+  when: disk_count >= 2
+
+- name: Mount data
+  ansible.posix.mount:
+    path: /mnt/data
+    src: "/dev/{{ largest_disk }}{{ part_suffix }}1"
+    fstype: xfs
+    state: mounted
+  when: disk_count >= 2
+
+#########################################################
+# 3 DISKS → ADDITIONAL LOG DISK
+#########################################################
+
+- name: Set log partition suffix
+  ansible.builtin.set_fact:
+    log_suffix: >-
+      {{
+        'p' if smallest_disk is search('^nvme|^mmcblk') else ''
+      }}
+  when: disk_count == 3
+
+- name: Ensure GPT label on smallest disk
   community.general.parted:
-    device: /dev/sdc
+    device: "/dev/{{ smallest_disk }}"
     label: gpt
-    name: log
+  when: disk_count == 3
+
+- name: Create log partition (8G)
+  community.general.parted:
+    device: "/dev/{{ smallest_disk }}"
     number: 1
     state: present
-    fs_type: ext4
+    part_start: 1MiB
+    part_end: 8G
+  when: disk_count == 3
+
+- name: Create ext4 for /var/log
+  community.general.filesystem:
+    fstype: ext4
+    dev: "/dev/{{ smallest_disk }}{{ log_suffix }}1"
+  when: disk_count == 3
+
+- name: Mount /var/log
+  ansible.posix.mount:
+    path: /var/log
+    src: "/dev/{{ smallest_disk }}{{ log_suffix }}1"
+    fstype: ext4
+    state: mounted
+  when: disk_count == 3

@@ -13,32 +13,26 @@
   ansible.builtin.debug:
     msg: "Running in pipeline: {{ in_pipeline }}"
 
-- name: Disk Configuration
-  when: ubtu22_run_task_disk
-  ansible.builtin.import_tasks: packages/main.yml
-  tags:
-    - packages
+- name: Include Debian 12 tasks
+  ansible.builtin.include_tasks: debian12.yml
+  when:
+    - ansible_facts['distribution'] == "Debian"
+    - ansible_facts['distribution_version'] is version("12", "==")
 
-- name: Packages
-  when: ubtu22_run_task_packages
-  ansible.builtin.import_tasks: packages/main.yml
-  tags:
-    - packages
+- name: Include Debian 13 tasks
+  ansible.builtin.include_tasks: debian13.yml
+  when:
+    - ansible_facts['distribution'] == "Debian"
+    - ansible_facts['distribution_version'] is version("13.3", "==")
 
-- name: Docker
-  when: ubtu22_run_task_docker
-  ansible.builtin.import_tasks: docker/main.yml
-  tags:
-    - docker
+- name: Include Ubuntu 22.04 tasks
+  ansible.builtin.include_tasks: ubuntu2204.yml
+  when:
+    - ansible_facts['distribution'] == "Ubuntu"
+    - ansible_facts['distribution_version'] is version("22.04", "==")
 
-- name: Configuration
-  when: ubtu22_run_task_configuration
-  ansible.builtin.import_tasks: configuration/main.yml
-  tags:
-    - configure
-
-- name: Security
-  when: ubtu22_run_task_security
-  ansible.builtin.import_tasks: security/main.yml
-  tags:
-    - security
+- name: Include Ubuntu 24.04 tasks
+  ansible.builtin.include_tasks: ubuntu2404.yml
+  when:
+    - ansible_facts['distribution'] == "Ubuntu"
+    - ansible_facts['distribution_version'] is version("24.04", "==")

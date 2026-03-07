@@ -1,0 +1,34 @@
+---
+- name: Ubuntu 22.04 specific task
+  ansible.builtin.debug:
+    msg: "Running tasks for Ubuntu 22.04"
+
+- name: Disk Configuration
+  when: ubtu22_run_task_disk
+  ansible.builtin.import_tasks: packages/main.yml
+  tags:
+    - packages
+
+- name: Packages
+  when: ubtu22_run_task_packages
+  ansible.builtin.import_tasks: packages/main.yml
+  tags:
+    - packages
+
+- name: Docker
+  when: ubtu22_run_task_docker
+  ansible.builtin.import_tasks: docker/main.yml
+  tags:
+    - docker
+
+- name: Configuration
+  when: ubtu22_run_task_configuration
+  ansible.builtin.import_tasks: configuration/main.yml
+  tags:
+    - configure
+
+- name: Security
+  when: ubtu22_run_task_security
+  ansible.builtin.import_tasks: security/main.yml
+  tags:
+    - security

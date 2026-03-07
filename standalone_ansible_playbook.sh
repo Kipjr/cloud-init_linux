@@ -8,7 +8,7 @@ if [ "$UUID" -eq 0 ]; then
     exit 1
 fi
 
-GITHUB_REPO_URL="${1:-https://github.com/Kipjr/cloud-init_ubuntu}"
+GITHUB_REPO_URL="${1:-https://github.com/Kipjr/cloud-init_linux}"
 PLAYBOOK_NAME="${2:-site.yml}"
 WORKING_DIR="${3:-/tmp}"
 ANSIBLE_ARG="${4}"

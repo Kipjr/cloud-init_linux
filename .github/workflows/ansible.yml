@@ -16,6 +16,15 @@ on:
         required: true
         default: false
         type: boolean
+      runner:
+        description: "Runner Image"
+        required: true    
+        type: choice
+        default: "ubuntu-latest"
+        options:
+          - ubuntu-latest
+          - ubuntu-22.04
+
       ansible_verbose:
         description: "Verbose mode"
         required: true
@@ -34,7 +43,7 @@ jobs:
         python-version: ["3.13"]
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       
       - name: Set up Python ${{ matrix.python-version }}
         id: setup-python
@@ -48,7 +57,7 @@ jobs:
           
       - name: Cache pipenv
         id: cache-pipenv
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.local/share/virtualenvs
           key: ${{ runner.os }}-pipenv-${{ hashFiles('**/Pipfile.lock') }}
@@ -81,7 +90,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Set up Python
         uses: actions/setup-python@v6
