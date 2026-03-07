@@ -16,6 +16,15 @@ on:
         required: true
         default: false
         type: boolean
+      runner:
+        description: "Runner Image"
+        required: true    
+        type: choice
+        default: "ubuntu-latest"
+        options:
+          - ubuntu-latest
+          - ubuntu-22.04
+
       ansible_verbose:
         description: "Verbose mode"
         required: true
