@@ -26,6 +26,7 @@
   when: msprod.stat.exists
   ansible.builtin.apt:
     deb: "/tmp/packages-microsoft-prod.deb"
+    force: true
 
 - name: Remove the Microsoft repository key file
   when: msprod.stat.exists
