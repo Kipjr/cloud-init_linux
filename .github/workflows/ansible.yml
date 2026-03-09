@@ -64,10 +64,8 @@ jobs:
          run: |
            ansible-lint -v --exclude .github proxmox \
              -f sarif --sarif-file results.sarif \
-             --nocolor --offline || true
-           if [ ! -f results.sarif ]; then
-             echo "{}" > results.sarif
-           fi
+             --nocolor --offline | tee results.sarif
+
        - name: Show lint result
          run: |
            echo "event_name: ${{ github.event_name }}"
