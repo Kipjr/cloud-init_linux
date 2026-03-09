@@ -62,7 +62,9 @@ jobs:
          id: lint_check
          continue-on-error: true
          run: |
-           ansible-lint -v --exclude .github proxmox -f sarif --sarif-file results.sarif || true
+           ansible-lint -v --exclude .github proxmox \
+             -f sarif --sarif-file results.sarif \
+             --nocolor --offline || true
            if [ ! -f results.sarif ]; then
              echo "{}" > results.sarif
            fi
