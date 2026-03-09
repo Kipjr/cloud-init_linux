@@ -54,7 +54,7 @@ jobs:
        - name: Install pip
          run: |
            python -m pip install --upgrade pip
-           pip install ansible-lint
+           pip install ansible-lint ansible
     
        - name: Run ansible-lint
          id: lint_check
