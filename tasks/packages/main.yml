@@ -4,35 +4,25 @@
     ms_base: "https://packages.microsoft.com/config"
     ms_deb: "packages-microsoft-prod.deb"
     ms_repo_path: >-
-     {% if ansible_facts.distribution == "Debian" %}debian/{{ ansible_facts['distribution_major_version'] }}{% elif ansible_facts.distribution == "Ubuntu" %}ubuntu/{{ ansible_facts['distribution_version'] }}{% else %}unsupported{% endif %}
-- name: Download the Microsoft repository package
-  ansible.builtin.get_url:
-    url: "{{ ms_base }}/{{ ms_repo_path }}"
-    dest: "/tmp/{{ ms_deb }}"
-    mode: "0644"
-- name: Download the Microsoft repository key file
+      {% if ansible_facts.distribution == "Debian" %}
+      debian/{{ ansible_facts.distribution_major_version }}
+      {% elif ansible_facts.distribution == "Ubuntu" %}
+      ubuntu/{{ ansible_facts.distribution_version }}
+      {% else %}
+      unsupported
+      {% endif %}
+
+- name: Download Microsoft repository package
   ansible.builtin.get_url:
     url: "{{ ms_base }}/{{ ms_repo_path }}/{{ ms_deb }}"
     dest: "/tmp/{{ ms_deb }}"
     mode: "0644"
-
-- name: Task name
-  ansible.builtin.stat:
-    path: "/tmp/packages-microsoft-prod.deb"
-  register: msprod
-
-- name: Register the Microsoft repository key
-  become: true
-  when: msprod.stat.exists
-  ansible.builtin.apt:
-    deb: "/tmp/packages-microsoft-prod.deb"
     force: true
 
-- name: Remove the Microsoft repository key file
-  when: msprod.stat.exists
-  ansible.builtin.file:
-    path: "/tmp/packages-microsoft-prod.deb"
-    state: absent
+- name: Install Microsoft repository package
+  become: true
+  ansible.builtin.apt:
+    deb: "/tmp/{{ ms_deb }}"
 
 # - name: Add Microsoft APT repository
 #  when: msprod.stat.exists
