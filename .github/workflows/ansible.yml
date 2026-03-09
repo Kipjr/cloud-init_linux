@@ -62,8 +62,10 @@ jobs:
          id: lint_check
          continue-on-error: true
          run: |
-           ansible-lint -v --exclude .github proxmox -f sarif --sarif-file results.sarif
-       
+           ansible-lint -v --exclude .github proxmox -f sarif --sarif-file results.sarif || true
+           if [ ! -f results.sarif ]; then
+             echo "{}" > results.sarif
+           fi
        - name: Show lint result
          run: |
            echo "event_name: ${{ github.event_name }}"
