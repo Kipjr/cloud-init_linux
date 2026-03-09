@@ -84,7 +84,7 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: ${{ needs.lint.outputs.python-version }}
-          cache: "pip
+          cache: "pip"
 
       - name: Install Ansible
         run: |
