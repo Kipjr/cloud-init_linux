@@ -34,7 +34,7 @@ on:
         type: boolean
 jobs:
   lint:
-    runs-on:  runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     outputs:
       lint_success: ${{ steps.lint_check.outputs.lint_success }}
       python-version: ${{ matrix.python-version }}
@@ -79,7 +79,7 @@ jobs:
   playbook:
     needs: lint
     if: ${{ inputs.run_playbook == true }}
-    runs-on: runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
+    runs-on: ${{ inputs.runner || 'ubuntu-latest' }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
