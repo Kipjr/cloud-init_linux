@@ -4,13 +4,13 @@
     ms_base: "https://packages.microsoft.com/config"
     ms_deb: "packages-microsoft-prod.deb"
     ms_repo_path: >-
-      {% if ansible_facts.distribution == "Debian" %}
+      {%- if ansible_facts.distribution == "Debian" -%}
       debian/{{ ansible_facts.distribution_major_version }}
-      {% elif ansible_facts.distribution == "Ubuntu" %}
+      {%- elif ansible_facts.distribution == "Ubuntu" -%}
       ubuntu/{{ ansible_facts.distribution_version }}
-      {% else %}
+      {%- else -%}
       unsupported
-      {% endif %}
+      {%- endif -%}
 
 - name: Download Microsoft repository package
   ansible.builtin.get_url:
