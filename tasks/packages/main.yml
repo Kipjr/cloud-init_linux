@@ -1,5 +1,6 @@
 ---
 - name: Set Microsoft repo variables (Debian / Ubuntu only)
+  when: ansible_facts['architecture'] == "amd64"
   ansible.builtin.set_fact:
     ms_base: "https://packages.microsoft.com/config"
     ms_deb: "packages-microsoft-prod.deb"
@@ -13,6 +14,8 @@
       {% endif %}
 
 - name: Download Microsoft repository package
+  when: ansible_facts['architecture'] == "amd64"
+  register: msprod
   ansible.builtin.get_url:
     url: "{{ ms_base }}/{{ ms_repo_path }}/{{ ms_deb }}"
     dest: "/tmp/{{ ms_deb }}"
@@ -21,6 +24,7 @@
 
 - name: Install Microsoft repository package
   become: true
+  when: ansible_facts['architecture'] == "amd64"
   ansible.builtin.apt:
     deb: "/tmp/{{ ms_deb }}"
 
@@ -36,6 +40,7 @@
   ignore_errors: true
   when:
     - pkg_webmin
+    - ansible_facts['architecture'] == "amd64"
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/webmin/webmin/master/setup-repos.sh
     dest: /tmp/setup-repos.sh
@@ -45,6 +50,7 @@
   when:
     - pkg_webmin
     - webmin_repo_download.state == "file"
+    - ansible_facts['architecture'] == "amd64"
   become: true
   args:
     creates: /etc/apt/sources.list.d/webmin.list
@@ -83,7 +89,9 @@
     state: present
 
 - name: Install PWSH
-  when: msprod.stat.exists and ansible_facts['architecture'] == "amd64"
+  when:
+    - msprod
+    - ansible_facts['architecture'] == "amd64"
   become: true
   ansible.builtin.apt:
     name:
@@ -93,6 +101,7 @@
 - name: Install Webmin
   when:
     - pkg_webmin
+    - ansible_facts['architecture'] == "amd64"
   become: true
   ansible.builtin.apt:
     name:
