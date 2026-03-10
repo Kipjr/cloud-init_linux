@@ -1,18 +1,21 @@
 ---
 - name: Set Microsoft repo variables (Debian / Ubuntu only)
+  when: ansible_facts['architecture'] == "amd64"
   ansible.builtin.set_fact:
     ms_base: "https://packages.microsoft.com/config"
     ms_deb: "packages-microsoft-prod.deb"
     ms_repo_path: >-
-      {%- if ansible_facts.distribution == "Debian" -%}
+      {% if ansible_facts.distribution == "Debian" %}
       debian/{{ ansible_facts.distribution_major_version }}
-      {%- elif ansible_facts.distribution == "Ubuntu" -%}
+      {% elif ansible_facts.distribution == "Ubuntu" %}
       ubuntu/{{ ansible_facts.distribution_version }}
-      {%- else -%}
+      {% else %}
       unsupported
-      {%- endif -%}
+      {% endif %}
 
 - name: Download Microsoft repository package
+  when: ansible_facts['architecture'] == "amd64"
+  register: msprod
   ansible.builtin.get_url:
     url: "{{ ms_base }}/{{ ms_repo_path }}/{{ ms_deb }}"
     dest: "/tmp/{{ ms_deb }}"
@@ -21,6 +24,7 @@
 
 - name: Install Microsoft repository package
   become: true
+  when: ansible_facts['architecture'] == "amd64"
   ansible.builtin.apt:
     deb: "/tmp/{{ ms_deb }}"
 
@@ -83,7 +87,7 @@
     state: present
 
 - name: Install PWSH
-  when: msprod.stat.exists and ansible_facts['architecture'] == "amd64"
+  when: msprod and ansible_facts['architecture'] == "amd64"
   become: true
   ansible.builtin.apt:
     name:
