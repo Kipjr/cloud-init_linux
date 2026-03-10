@@ -40,6 +40,7 @@
   ignore_errors: true
   when:
     - pkg_webmin
+    - ansible_facts['architecture'] == "amd64"
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/webmin/webmin/master/setup-repos.sh
     dest: /tmp/setup-repos.sh
@@ -49,6 +50,7 @@
   when:
     - pkg_webmin
     - webmin_repo_download.state == "file"
+    - ansible_facts['architecture'] == "amd64"
   become: true
   args:
     creates: /etc/apt/sources.list.d/webmin.list
@@ -87,7 +89,9 @@
     state: present
 
 - name: Install PWSH
-  when: msprod and ansible_facts['architecture'] == "amd64"
+  when: 
+     - msprod 
+     - ansible_facts['architecture'] == "amd64"
   become: true
   ansible.builtin.apt:
     name:
@@ -97,6 +101,7 @@
 - name: Install Webmin
   when:
     - pkg_webmin
+    - ansible_facts['architecture'] == "amd64"
   become: true
   ansible.builtin.apt:
     name:
