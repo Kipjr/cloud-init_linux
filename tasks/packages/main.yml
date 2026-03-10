@@ -49,7 +49,6 @@
 - name: Configure Webmin Repo
   when:
     - pkg_webmin
-    - webmin_repo_download.state == "file"
     - ansible_facts['architecture'] == "amd64"
   become: true
   args:
