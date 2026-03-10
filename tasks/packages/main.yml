@@ -90,8 +90,8 @@
 
 - name: Install PWSH
   when:
-      - msprod
-      - ansible_facts['architecture'] == "amd64"
+    - msprod
+    - ansible_facts['architecture'] == "amd64"
   become: true
   ansible.builtin.apt:
     name:
