@@ -21,7 +21,7 @@ sudo apt-get install -y git python3-venv python3-pip
 # Detect if running inside repo
 if [ ! -d "${SCRIPT_DIR}/.git" ]; then
     mkdir -p "${WORKING_DIR}"
-    TMPDIR="$(mktemp -d -p "${WORKING_DIR}" cloud-init.XXXX)"
+    TMPDIR="$(mktemp -d -p "${WORKING_DIR}" ansible.XXXX)"
     git clone --branch ${REPO_BRANCH} "${GITHUB_REPO_URL}" "${TMPDIR}/repo"
     cd "${TMPDIR}/repo"
     chmod +x "${TMPDIR}/repo/standalone_ansible_playbook.sh"
@@ -31,8 +31,6 @@ if [ ! -d "${SCRIPT_DIR}/.git" ]; then
         "${GITHUB_REPO_URL}" \
         "${ANSIBLE_ARG}"
 fi
-
-cd "${SCRIPT_DIR}"
 
 python3 -m venv venv
 # shellcheck disable=SC1091
