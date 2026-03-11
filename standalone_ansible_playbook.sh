@@ -7,10 +7,11 @@ if [ "$UID_CHECK" -eq 0 ]; then
     exit 1
 fi
 
-GITHUB_REPO_URL="${1:-https://github.com/Kipjr/cloud-init_linux.git}"
-PLAYBOOK_NAME="${2:-site.yml}"
-WORKING_DIR="${3:-/tmp}"
-ANSIBLE_ARG="${4:-}"
+REPO_BRANCH="${1:-dev}"
+GITHUB_REPO_URL="${2:-https://github.com/Kipjr/cloud-init_linux.git}"
+PLAYBOOK_NAME="site.yml"
+WORKING_DIR="/tmp"
+ANSIBLE_ARG="${3:-}"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -21,14 +22,13 @@ sudo apt-get install -y git python3-venv python3-pip
 if [ ! -d "${SCRIPT_DIR}/.git" ]; then
     mkdir -p "${WORKING_DIR}"
     TMPDIR="$(mktemp -d -p "${WORKING_DIR}" cloud-init.XXXX)"
-    git clone "${GITHUB_REPO_URL}" "${TMPDIR}/repo"
-
+    git clone --branch ${REPO_BRANCH} "${GITHUB_REPO_URL}" "${TMPDIR}/repo"
+    cd "${TMPDIR}/repo"
     chmod +x "${TMPDIR}/repo/standalone_ansible_playbook.sh"
 
     exec "${TMPDIR}/repo/standalone_ansible_playbook.sh" \
+        "${REPO_BRANCH}" \
         "${GITHUB_REPO_URL}" \
-        "${PLAYBOOK_NAME}" \
-        "${WORKING_DIR}" \
         "${ANSIBLE_ARG}"
 fi
 
