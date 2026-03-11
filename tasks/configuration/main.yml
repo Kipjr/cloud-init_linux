@@ -58,7 +58,7 @@
   register: ssh_keypair
 
 - name: Add SSH public key to authorized_keys
-  when: ssh_keypair succeeded
+  when: ssh_keypair is succeeded
   ansible.posix.authorized_key:
     user: "{{ ansible_facts['user_id'] }}"
     key: "{{ ssh_keypair.public_key }}"
