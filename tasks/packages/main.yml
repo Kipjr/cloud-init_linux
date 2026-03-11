@@ -1,7 +1,7 @@
 ---
 - name: Set Microsoft repo variables (Debian / Ubuntu only)
   when: 
-    - ansible_facts['architecture'] == "amd64"
+    - ansible_facts['architecture'] in ['amd64', 'x86_64']
     - pkg_pwsh
   register: msprod_repo_var
   ansible.builtin.set_fact:
@@ -48,7 +48,7 @@
   ignore_errors: true
   when:
     - pkg_webmin
-    - ansible_facts['architecture'] == "amd64"
+    - ansible_facts['architecture'] in ['amd64', 'x86_64']
   ansible.builtin.get_url:
     url: https://raw.githubusercontent.com/webmin/webmin/master/setup-repos.sh
     dest: /tmp/setup-repos.sh
@@ -98,7 +98,7 @@
 
 - name: Install PWSH
   when:
-    - ansible_facts['architecture'] == "amd64"
+    - ansible_facts['architecture'] in ['amd64', 'x86_64']
     - msprod_repo is succeeded
     - pkg_pwsh
   become: true
