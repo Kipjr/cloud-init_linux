@@ -18,7 +18,8 @@
 
 - name: Download Microsoft repository package
   when: 
-    - msprod_repo_var.rc == 0
+    - pkg_pwsh
+    - msprod_repo_var is succeeded
   register: msprod
   ansible.builtin.get_url:
     url: "{{ ms_base }}/{{ ms_repo_path }}/{{ ms_deb }}"
@@ -28,8 +29,10 @@
 
 - name: Install Microsoft repository package
   become: true
+  register: msprod_repo
   when: 
-    - msprod.rc == 0
+    - pkg_pwsh
+    - msprod is succeeded
   ansible.builtin.apt:
     deb: "/tmp/{{ ms_deb }}"
 
@@ -54,7 +57,8 @@
 - name: Configure Webmin Repo
   register: configure_webmin
   when:
-    - webmin_repo_download.rc == 0
+    - pkg_webmin
+    - webmin_repo_download is succeeded
   become: true
   args:
     creates: /etc/apt/sources.list.d/webmin.list
@@ -94,8 +98,8 @@
 
 - name: Install PWSH
   when:
-    - msprod.rc == 0
     - ansible_facts['architecture'] == "amd64"
+    - msprod_repo is succeeded
     - pkg_pwsh
   become: true
   ansible.builtin.apt:
@@ -105,7 +109,7 @@
 
 - name: Install Webmin
   when:
-    - configure_webmin.rc == 0
+    - configure_webmin is succeeded
   become: true
   ansible.builtin.apt:
     name:
