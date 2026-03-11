@@ -1,37 +1,52 @@
-#!/bin/bash
-set -e
-set -o pipefail
+#!/usr/bin/env bash
+set -euo pipefail
 
-UUID=$(id -u)
-if [ "$UUID" -eq 0 ]; then
-    echo "Please run as a regular user. Exiting..."
+UID_CHECK=$(id -u)
+if [ "$UID_CHECK" -eq 0 ]; then
+    echo "Run as regular user."
     exit 1
 fi
 
-GITHUB_REPO_URL="${1:-https://github.com/Kipjr/cloud-init_linux}"
+GITHUB_REPO_URL="${1:-https://github.com/Kipjr/cloud-init_linux.git}"
 PLAYBOOK_NAME="${2:-site.yml}"
 WORKING_DIR="${3:-/tmp}"
-ANSIBLE_ARG="${4}"
+ANSIBLE_ARG="${4:-}"
 
-cd "${WORKING_DIR}"
-TMPDIR=$(mktemp -d -p "${WORKING_DIR}"  ansible.XXXX)
-cd "${TMPDIR}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-curl https://bootstrap.pypa.io/get-pip.py -o "${TMPDIR}/get-pip.py"
-python3 "${TMPDIR}/get-pip.py" --user
-export -p PATH=/home/${USER}/.local/bin:$PATH
-python3 -m pip install --user ansible
+sudo apt-get update
+sudo apt-get install -y git python3-venv python3-pip
 
-git clone "${GITHUB_REPO_URL}" git_repo
-if [ -f "$(dirname "$0")/defaults/main.yml" ]; then
-    cp "$(dirname "$0")/defaults/main.yml" "${TMPDIR}/git_repo/defaults/"
+# Detect if running inside repo
+if [ ! -d "${SCRIPT_DIR}/.git" ]; then
+    mkdir -p "${WORKING_DIR}"
+    TMPDIR="$(mktemp -d -p "${WORKING_DIR}" cloud-init.XXXX)"
+    git clone "${GITHUB_REPO_URL}" "${TMPDIR}/repo"
+
+    chmod +x "${TMPDIR}/repo/standalone_ansible_playbook.sh"
+
+    exec "${TMPDIR}/repo/standalone_ansible_playbook.sh" \
+        "${GITHUB_REPO_URL}" \
+        "${PLAYBOOK_NAME}" \
+        "${WORKING_DIR}" \
+        "${ANSIBLE_ARG}"
 fi
-cd "${TMPDIR}/git_repo"
-if [ -f "$PWD/${PLAYBOOK_NAME}" ]; then
+
+cd "${SCRIPT_DIR}"
+
+python3 -m venv venv
+# shellcheck disable=SC1091
+source venv/bin/activate
+pip install ansible
+
+if [ -f "${SCRIPT_DIR}/defaults/main.yml" ]; then
+    mkdir -p defaults
+fi
+
+if [ -f "${SCRIPT_DIR}/${PLAYBOOK_NAME}" ]; then
     ansible-galaxy install -r collections/requirements.yml
-    # shellcheck disable=SC2086 # Intended non-quoted var. Will break if quoted
     ansible-playbook -v -i inventory ${ANSIBLE_ARG} "${PLAYBOOK_NAME}"
 else
     echo "Playbook ${PLAYBOOK_NAME} does not exist."
+    exit 1
 fi
-cd "${WORKING_DIR}"
