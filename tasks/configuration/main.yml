@@ -55,7 +55,21 @@
     type: ed25519
     owner: "{{ ansible_facts['user_id'] }}"
     mode: '0600'
+
+- name: Get public key
+  ansible.builtin.find:
+    paths: "/home/{{ ansible_facts.user_id }}/.ssh"
+    file_type: file
+    patterns:
+      - "*.pub"
+    excludes:
+      - "id_*"
+      - "*.key"
+      - "known_hosts"
+      - "authorized_keys"
+      - "config"
   register: ssh_keypair
+  failed_when: false
 
 - name: Add SSH public key to authorized_keys
   when: ssh_keypair is succeeded
