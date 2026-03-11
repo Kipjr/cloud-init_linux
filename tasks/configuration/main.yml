@@ -58,7 +58,7 @@
 
 - name: Get public key
   ansible.builtin.find:
-    paths: "/home/{{ ansible_facts.user_id }}/.ssh"
+    paths: "/home/*/.ssh"
     file_type: file
     patterns:
       - "*.pub"
@@ -72,7 +72,7 @@
 - name: Add SSH public key to authorized_keys
   when: ssh_keypair is succeeded
   ansible.posix.authorized_key:
-    user: "{{ lookup('file', item.pw_name) }}"
+    user: "{{ item.pw_name }}"
     key: "{{ lookup('file', item.path) }}"
   loop: "{{ ssh_keypair.files }}"
   
