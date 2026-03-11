@@ -6,7 +6,7 @@ docker_rootless_user: "docker"
 
 vm: true
 pkg_webmin: true
-pkg_snmp: false
+pkg_snmp: true
 pkg_pwsh: true
 
 deb12_run_task_configuration: true
@@ -17,8 +17,8 @@ deb12_run_task_security: true
 deb12_runcis: false
 
 deb13_run_task_configuration: true
-deb13_run_task_disk: false
-deb13_run_task_docker: false
+deb13_run_task_disk: true
+deb13_run_task_docker: true
 deb13_run_task_packages: true
 deb13_run_task_security: true
 deb13_runcis: false
