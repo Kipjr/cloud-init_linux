@@ -75,9 +75,10 @@
     user: "{{ item.pw_name }}"
     key: "{{ lookup('file', item.path) }}"
   loop: "{{ ssh_keypair.files }}"
+  register: ssh_keypair_added
   
 - name: Disable SSH password authentication
-  when: ssh_keypair.public_key is defined
+  when: ssh_keypair is succeeded and ssh_keypair_added is succeeded
   become: true
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
@@ -86,7 +87,7 @@
     state: present
 
 - name: Enable SSH key-based login
-  when: ssh_keypair.public_key is defined
+  when: ssh_keypair is succeeded and ssh_keypair_added is succeeded
   become: true
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
@@ -95,8 +96,7 @@
     state: present
 
 - name: Restart SSH service
-  when:
-    - ssh_keypair.public_key is defined
+  when: ssh_keypair is succeeded and ssh_keypair_added is succeeded
   become: true
   ansible.builtin.service:
     name: ssh
