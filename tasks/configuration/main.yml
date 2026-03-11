@@ -49,7 +49,7 @@
   failed_when: false
 
 - name: Generate SSH private and public keys
-  when: not file_private_key succeeded
+  when: file_private_key.matched == 0
   community.crypto.openssh_keypair:
     path: /home/{{ ansible_facts['user_id'] }}/.ssh/id_rsa
     type: ed25519
