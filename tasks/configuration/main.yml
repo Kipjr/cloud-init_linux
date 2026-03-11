@@ -72,9 +72,10 @@
 - name: Add SSH public key to authorized_keys
   when: ssh_keypair is succeeded
   ansible.posix.authorized_key:
-    user: "{{ ansible_facts['user_id'] }}"
-    key: "{{ ssh_keypair.public_key }}"
-
+    user: "{{ lookup('file', item.pw_name) }}"
+    key: "{{ lookup('file', item.path) }}"
+  loop: "{{ ssh_keypair.files }}"
+  
 - name: Disable SSH password authentication
   when: ssh_keypair.public_key is defined
   become: true
