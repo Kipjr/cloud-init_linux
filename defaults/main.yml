@@ -7,6 +7,7 @@ docker_rootless_user: "docker"
 vm: true
 pkg_webmin: true
 pkg_snmp: false
+pkg_pwsh: true
 
 deb12_run_task_configuration: true
 deb12_run_task_disk: true
