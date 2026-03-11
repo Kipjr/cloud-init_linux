@@ -58,7 +58,7 @@
 
 - name: Get public key
   ansible.builtin.find:
-    paths: "/home/*/.ssh"
+    paths: "/home/{{ ansible_facts['user_id'] }}/.ssh"
     file_type: file
     patterns:
       - "*.pub"
