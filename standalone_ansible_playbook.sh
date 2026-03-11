@@ -37,9 +37,8 @@ python3 -m venv venv
 source venv/bin/activate
 pip install ansible
 
-if [ -f "${SCRIPT_DIR}/defaults/main.yml" ]; then
-    mkdir -p defaults
-fi
+echo "Make sure you've edited defaults/main.yml.. starting in 60s"
+sleep 60
 
 if [ -f "${SCRIPT_DIR}/${PLAYBOOK_NAME}" ]; then
     ansible-galaxy install -r collections/requirements.yml
