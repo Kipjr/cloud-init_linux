@@ -1,6 +1,6 @@
 ---
 - name: Set Microsoft repo variables (Debian / Ubuntu only)
-  when: 
+  when:
     - ansible_facts['architecture'] in ['amd64', 'x86_64']
     - pkg_pwsh
   register: msprod_repo_var
@@ -8,16 +8,16 @@
     ms_base: "https://packages.microsoft.com/config"
     ms_deb: "packages-microsoft-prod.deb"
     ms_repo_path: >-
-      {% if ansible_facts.distribution == "Debian" %}
+      {%- if ansible_facts.distribution == "Debian" -%}
       debian/{{ ansible_facts.distribution_major_version }}
-      {% elif ansible_facts.distribution == "Ubuntu" %}
+      {%- elif ansible_facts.distribution == "Ubuntu" -%}
       ubuntu/{{ ansible_facts.distribution_version }}
-      {% else %}
+      {%- else -%}
       unsupported
-      {% endif %}
+      {%- endif -%}
 
 - name: Download Microsoft repository package
-  when: 
+  when:
     - pkg_pwsh
     - msprod_repo_var is succeeded
   register: msprod
@@ -30,7 +30,7 @@
 - name: Install Microsoft repository package
   become: true
   register: msprod_repo
-  when: 
+  when:
     - pkg_pwsh
     - msprod is succeeded
   ansible.builtin.apt:
