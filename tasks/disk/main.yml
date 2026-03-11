@@ -27,6 +27,7 @@
       }}
 
 - name: Build disk size map (GB numeric)
+  when: not in_pipeline
   ansible.legacy.set_fact:
     disk_sizes: >-
       {{
@@ -40,11 +41,13 @@
       }}
 
 - name: Sort disks by size
+  when: not in_pipeline
   ansible.legacy.set_fact:
     sorted_disks: "{{ disk_sizes | dict2items | sort(attribute='value') | map(attribute='key') | list }}"
     disk_count: "{{ sorted_disks | length }}"
 
 - name: Detect root source device
+  when: not in_pipeline
   ansible.legacy.set_fact:
     root_device: "{{ ansible_facts.mounts | selectattr('mount', 'equalto', '/') | map(attribute='device') | first }}"
     root_online: "{{ (ansible_facts.mounts | selectattr('mount','equalto','/') | list | length) > 0 }}"
@@ -54,6 +57,7 @@
 #########################################################
 
 - name: Skip disk changes (single disk with active root)
+  when: not in_pipeline
   ansible.legacy.meta: end_play
   when:
     - disk_count == 1
@@ -64,6 +68,7 @@
 #########################################################
 
 - name: Assign disk roles
+  when: not in_pipeline
   ansible.builtin.set_fact:
     smallest_disk: "{{ sorted_disks[0] }}"
     largest_disk: "{{ sorted_disks[-1] }}"
@@ -74,6 +79,7 @@
 #########################################################
 
 - name: Set partition suffix rule
+  when: not in_pipeline
   ansible.builtin.set_fact:
     part_suffix: >-
       {{
@@ -86,12 +92,14 @@
 #########################################################
 
 - name: Ensure GPT label on largest disk
+  when: not in_pipeline
   community.general.parted:
     device: "/dev/{{ largest_disk }}"
     label: gpt
   when: disk_count >= 2
 
 - name: Create data partition (64G at start)
+  when: not in_pipeline
   community.general.parted:
     device: "/dev/{{ largest_disk }}"
     number: 1
@@ -101,12 +109,14 @@
   when: disk_count >= 2
 
 - name: Create XFS filesystem for data
+  when: not in_pipeline
   community.general.filesystem:
     fstype: xfs
     dev: "/dev/{{ largest_disk }}{{ part_suffix }}1"
   when: disk_count >= 2
 
 - name: Mount data
+  when: not in_pipeline
   ansible.posix.mount:
     path: /mnt/data
     src: "/dev/{{ largest_disk }}{{ part_suffix }}1"
@@ -119,6 +129,7 @@
 #########################################################
 
 - name: Set log partition suffix
+  when: not in_pipeline
   ansible.builtin.set_fact:
     log_suffix: >-
       {{
@@ -127,12 +138,14 @@
   when: disk_count == 3
 
 - name: Ensure GPT label on smallest disk
+  when: not in_pipeline
   community.general.parted:
     device: "/dev/{{ smallest_disk }}"
     label: gpt
   when: disk_count == 3
 
 - name: Create log partition (8G)
+  when: not in_pipeline
   community.general.parted:
     device: "/dev/{{ smallest_disk }}"
     number: 1
@@ -142,12 +155,14 @@
   when: disk_count == 3
 
 - name: Create ext4 for /var/log
+  when: not in_pipeline
   community.general.filesystem:
     fstype: ext4
     dev: "/dev/{{ smallest_disk }}{{ log_suffix }}1"
   when: disk_count == 3
 
 - name: Mount /var/log
+  when: not in_pipeline
   ansible.posix.mount:
     path: /var/log
     src: "/dev/{{ smallest_disk }}{{ log_suffix }}1"
