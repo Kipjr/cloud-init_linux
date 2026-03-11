@@ -57,7 +57,7 @@ jobs:
 
        - name: Install pip packages
          run: |
-           pip install -e -r ${{ github.workspace}}/.github/workflows/requirements.txt
+           pip install -e -r requirements.txt
 
        - name: Run ansible-lint
          id: lint_check
