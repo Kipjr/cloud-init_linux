@@ -42,7 +42,7 @@ sleep 60
 
 if [ -f "${SCRIPT_DIR}/${PLAYBOOK_NAME}" ]; then
     ansible-galaxy install -r collections/requirements.yml
-    ansible-playbook -v -i inventory ${ANSIBLE_ARG} "${PLAYBOOK_NAME}"
+    ansible-playbook -K -v -i inventory ${ANSIBLE_ARG} "${PLAYBOOK_NAME}"
 else
     echo "Playbook ${PLAYBOOK_NAME} does not exist."
     exit 1
