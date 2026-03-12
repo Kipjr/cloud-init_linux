@@ -51,7 +51,7 @@
 - name: Generate SSH private and public keys
   when: file_private_key.matched == 0
   community.crypto.openssh_keypair:
-    path: /home/{{ ansible_facts['user_id'] }}/.ssh/id_rsa
+    path: /home/{{ ansible_facts['user_id'] }}/.ssh/id_ed25519
     type: ed25519
     owner: "{{ ansible_facts['user_id'] }}"
     mode: '0600'
