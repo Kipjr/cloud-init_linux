@@ -76,7 +76,7 @@
     key: "{{ lookup('file', item.path) }}"
   loop: "{{ ssh_keypair.files }}"
   register: ssh_keypair_added
-  
+
 - name: Disable SSH password authentication
   when: ssh_keypair is succeeded and ssh_keypair_added is succeeded
   become: true
