@@ -49,22 +49,36 @@
   failed_when: false
 
 - name: Generate SSH private and public keys
-  when: not file_private_key.stat.exists
+  when: file_private_key.matched == 0
   community.crypto.openssh_keypair:
-    path: /home/{{ ansible_facts['user_id'] }}/.ssh/id_rsa
+    path: /home/{{ ansible_facts['user_id'] }}/.ssh/id_ed25519
     type: ed25519
     owner: "{{ ansible_facts['user_id'] }}"
     mode: '0600'
+
+- name: Get public key
+  ansible.builtin.find:
+    paths: "/home/{{ ansible_facts['user_id'] }}/.ssh"
+    file_type: file
+    patterns:
+      - "*.pub"
+    excludes:
+      - "known_hosts"
+      - "authorized_keys"
+      - "config"
   register: ssh_keypair
+  failed_when: false
 
 - name: Add SSH public key to authorized_keys
-  when: not file_private_key.stat.exists
+  when: ssh_keypair is succeeded
   ansible.posix.authorized_key:
-    user: "{{ ansible_facts['user_id'] }}"
-    key: "{{ ssh_keypair.public_key }}"
+    user: "{{ item.pw_name }}"
+    key: "{{ lookup('file', item.path) }}"
+  loop: "{{ ssh_keypair.files }}"
+  register: ssh_keypair_added
 
 - name: Disable SSH password authentication
-  when: ssh_keypair.public_key is defined
+  when: ssh_keypair is succeeded and ssh_keypair_added is succeeded
   become: true
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
@@ -73,7 +87,7 @@
     state: present
 
 - name: Enable SSH key-based login
-  when: ssh_keypair.public_key is defined
+  when: ssh_keypair is succeeded and ssh_keypair_added is succeeded
   become: true
   ansible.builtin.lineinfile:
     path: /etc/ssh/sshd_config
@@ -82,9 +96,7 @@
     state: present
 
 - name: Restart SSH service
-  when:
-    - not file_private_key.stat.exists
-    - ssh_keypair.public_key is defined
+  when: ssh_keypair is succeeded and ssh_keypair_added is succeeded
   become: true
   ansible.builtin.service:
     name: ssh
