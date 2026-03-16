@@ -246,7 +246,7 @@
   block:
     - name: Configure Docker Daemon.json
       become: true
-      when: mountpoint_mnt_data == true
+      when: mountpoint_mnt_data
       ansible.builtin.copy:
         dest: "{{ docker_daemon_conf }}"
         mode: "0644"
@@ -261,14 +261,15 @@
           }
     - name: Configure containerd
       become: true
-      when: mountpoint_mnt_data == true
+      when: mountpoint_mnt_data
       ansible.builtin.lineinfile:
+        mode: "0644"
         path:  "/etc/containerd/config.toml"
         line: |
           version = 2
           root = "/mnt/data/containerd"
         create: true
-        state: present  
+        state: present
 
     - name: Ensure the directory for Portainer exists
       ansible.builtin.file:
