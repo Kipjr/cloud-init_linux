@@ -1,4 +1,9 @@
 ---
+- name: Check if /mnt/data is a mountpoint
+  ansible.builtin.command: mountpoint -q /mnt/data
+  register: mountpoint_mnt_data
+  failed_when: false
+  changed_when: false
 
 - name: Ensure supported distribution
   ansible.builtin.assert:
@@ -241,17 +246,30 @@
   block:
     - name: Configure Docker Daemon.json
       become: true
+      when: mountpoint_mnt_data == true
       ansible.builtin.copy:
         dest: "{{ docker_daemon_conf }}"
         mode: "0644"
         content: |
           {
             "iptables": true,
+            "data-root": "/mnt/data/docker"
             "bip": "10.249.0.1/24",
             "default-address-pools":[
               {"base":"10.249.1.0/24","size":28}
             ]
           }
+    - name: Configure containerd
+      become: true
+      when: mountpoint_mnt_data == true
+      ansible.builtin.lineinfile:
+        path:  "/etc/containerd/config.toml"
+        line: |
+          version = 2
+          root = "/mnt/data/containerd"
+        create: true
+        state: present  
+
     - name: Ensure the directory for Portainer exists
       ansible.builtin.file:
         path: /home/{{ ansible_facts['user_id'] }}/docker/portainer
