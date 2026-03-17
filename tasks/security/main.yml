@@ -14,7 +14,6 @@
       - apparmor-utils
       - audispd-plugins
     state: present
- libpam-pwquality
 
 - name: Apply CIS-remediation for Ubuntu 22.04
   when: ubtu22_runcis
