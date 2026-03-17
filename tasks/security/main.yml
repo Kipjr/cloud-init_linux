@@ -1,4 +1,20 @@
 ---
+- name: Ensure all repos are up to date
+  become: true
+  ansible.builtin.apt:
+    update_cache: true
+
+- name: Install required security packages
+  become: true
+  ansible.builtin.apt:
+    name:
+      - pkg-config
+      - libpam-pwquality
+      - auditd
+      - apparmor-utils
+      - audispd-plugins
+    state: present
+
 - name: Apply CIS-remediation for Ubuntu 22.04
   when: ubtu22_runcis
   ansible.builtin.include_role:

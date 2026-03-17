@@ -5,9 +5,9 @@
 
 - name: Disk Configuration
   when: ubtu22_run_task_disk
-  ansible.builtin.import_tasks: packages/main.yml
+  ansible.builtin.import_tasks: disk/main.yml
   tags:
-    - packages
+    - disk
 
 - name: Packages
   when: ubtu22_run_task_packages
