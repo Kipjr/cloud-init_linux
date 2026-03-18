@@ -5,5 +5,3 @@ all:
       fqdn: hostname1.domain.tld
       username: user001
       dns1: 10.0.0.1
-      dns2: 10.0.0.2
-      
