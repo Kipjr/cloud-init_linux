@@ -22,11 +22,18 @@
     create_home: true
     state: present
 
-- name: Configure DNS
+- name: Read current DNS servers
+  ansible.builtin.command:
+    cmd: resolvectl dns {{ ansible_facts['default_ipv4']['interface'] }}
+  register: current_dns
+  changed_when: false
+
+- name: Configure DNS via systemd-resolved
   become: true
-  community.general.resolved:
-    interface: "{{ ansible_facts['default_ipv4']['interface'] }}"
-    dns: "{{ dns1 }}"
+  ansible.builtin.command:
+    cmd: resolvectl dns {{ ansible_facts['default_ipv4']['interface'] }} {{ dns1 }}
+  when: dns1 not in current_dns.stdout
+  changed_when: true
 
 - name: Set timezone to Europe/Amsterdam
   become: true
