@@ -1,4 +1,9 @@
 ---
+- name: Skip disk if in pipeline
+  ansible.builtin.meta: end_play
+  when:
+    - in_pipeline | bool
+
 - name: Detect candidate block devices
   ansible.builtin.set_fact:
     candidate_disks: >-
@@ -42,8 +47,7 @@
 - name: Skip disk partitioning
   ansible.builtin.meta: end_play
   when:
-    - in_pipeline | bool
-      or single_root_disk
+    - single_root_disk
 
 - name: Ensure all packages are up to date
   become: true
