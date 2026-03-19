@@ -102,7 +102,7 @@ jobs:
 
       - name: Show ansible facte
         if: ${{ inputs.ansible_verbose == true }}
-        run: ansible -i inventory site.yml -m ansible.builtin.setup
+        run: ansible all -i inventory -m ansible.builtin.setup
 
       - name: Run Ansible Playbook (verbose)
         if: ${{ inputs.ansible_verbose == true }}
