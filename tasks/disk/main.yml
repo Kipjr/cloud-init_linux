@@ -1,9 +1,4 @@
 ---
-- name: Skip disk if in pipeline
-  ansible.builtin.meta: end_play
-  when:
-    - in_pipeline | bool
-
 - name: Detect candidate block devices
   ansible.builtin.set_fact:
     candidate_disks: >-
