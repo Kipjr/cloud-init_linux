@@ -5,7 +5,7 @@
 
 - name: Disk Configuration
   when: ubtu24_run_task_disk and not in_pipeline | bool
-  ansible.builtin.import_tasks: disk/main.yml 
+  ansible.builtin.import_tasks: disk/main.yml
   tags:
     - disk
 
