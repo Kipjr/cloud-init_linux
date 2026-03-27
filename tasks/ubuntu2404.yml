@@ -4,7 +4,7 @@
     msg: "Running tasks for Ubuntu 24.04"
 
 - name: Disk Configuration
-  when: ubtu24_run_task_disk
+  when: ubtu24_run_task_disk and not in_pipeline | bool
   ansible.builtin.import_tasks: disk/main.yml
   tags:
     - disk

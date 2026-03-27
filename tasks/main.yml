@@ -5,6 +5,14 @@
     content: "{{ ansible_facts | to_nice_json }}"
     dest: "/tmp/ansible_facts_{{ inventory_hostname }}.json"
 
+- name: Flatten hostvars and put into facts
+  ansible.builtin.set_fact:
+    "{{ item.key }}": "{{ item.value }}"
+  loop: "{{ hostvars[inventory_hostname]['all']['hosts']['localhost'] | dict2items }}"
+
+- name: Display current hostvars
+  ansible.builtin.debug:
+    msg: "var=hostvars[inventory_hostname]['all']"
 - name: Get my current environment
   ansible.builtin.set_fact:
     in_pipeline: "{{ ansible_env.RUNNER_ENVIRONMENT | default('') in ['github-hosted', 'self-hosted'] }}"

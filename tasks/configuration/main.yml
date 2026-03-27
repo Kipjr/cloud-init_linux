@@ -1,10 +1,39 @@
 ---
-
-- name: Set the machine FQDN
-  when: ansible_fqdn is defined and ansible_fqdn | length <= 32
+- name: Set the machine hostname
+  when: hostname is defined and hostname | length <= 32
   become: true
   ansible.builtin.hostname:
-    name: "{{ ansible_facts['fqdn'] }}"
+    name: "{{ hostname }}"
+
+- name: Set the machine hostname and fqdn
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: '^127\.0\.1\.1'
+    line: "127.0.1.1 {{ fqdn }} {{ hostname }}"
+    create: true
+    mode: "0644"
+
+- name: Create new user
+  become: true
+  ansible.builtin.user:
+    name: "{{ username }}"
+    shell: /bin/bash
+    create_home: true
+    state: present
+
+- name: Read current DNS servers
+  ansible.builtin.command:
+    cmd: resolvectl dns {{ ansible_facts['default_ipv4']['interface'] }}
+  register: current_dns
+  changed_when: false
+
+- name: Configure DNS via systemd-resolved
+  become: true
+  ansible.builtin.command:
+    cmd: resolvectl dns {{ ansible_facts['default_ipv4']['interface'] }} {{ dns1 }}
+  when: dns1 not in current_dns.stdout
+  changed_when: true
 
 - name: Set timezone to Europe/Amsterdam
   become: true
@@ -35,7 +64,7 @@
 
 - name: Check if SSH private key already exists
   ansible.builtin.find:
-    paths: "/home/{{ ansible_facts.user_id }}/.ssh"
+    paths: "/home/{{ ansible_facts['user_id'] }}/.ssh"
     file_type: file
     patterns:
       - "id_*"
