@@ -37,6 +37,12 @@ ubtu24_run_task_packages: true
 ubtu24_run_task_security: true
 ubtu24_runcis: false
 
+setup_audit: true
+run_audit: true
+audit_run_heavy_tests: false
+audit_only: true
+get_audit_binary_method: download
+
 ###
 ### ubtu22cis variables
 ###
@@ -49,8 +55,6 @@ ubtu22cis_snmp_server: true
 ubtu22cis_remote_log_server: 127.0.0.1
 ubtu22cis_auditd_disk_full_action: syslog
 ubtu22cis_auditd_admin_space_left_action: syslog
-setup_audit: true
-run_audit: true
 ubtu22cis_rule_1_1_1_6: true
 ubtu22cis_rule_4_1_7: false
 benchmark: UBUNTU22-CIS
@@ -67,11 +71,8 @@ skip_reboot: true
 ubtu22cis_ask_passwd_to_boot: false
 container_vars_file: is_container.yml
 ubtu22cis_uses_root: false
-audit_run_heavy_tests: true
-audit_only: false
 fetch_audit_files: false
 audit_capture_files_dir: /tmp
-get_audit_binary_method: download
 audit_bin_copy_location: /tmp
 audit_content: git
 audit_conf_source: some path or url to copy from
@@ -603,3 +604,55 @@ ubtu22cis_rule_7_2_7: true
 ubtu22cis_rule_7_2_8: true
 ubtu22cis_rule_7_2_9: true
 ubtu22cis_rule_7_2_10: true
+
+###
+### ubtu24cis variables
+###
+ubtu24cis_disruption_high: false
+ubtu24cis_uses_root: false
+
+ubtu24cis_level_1: true
+ubtu24cis_level_2: false
+
+ubtu24cis_section1: true
+ubtu24cis_section2: true
+ubtu24cis_section3: true
+ubtu24cis_section4: true
+ubtu24cis_section5: true
+ubtu24cis_section6: true
+ubtu24cis_section7: true
+
+ubtu24cis_set_boot_pass: false
+ubtu24cis_snmp_server: true
+ubtu24cis_time_sync_tool: "systemd-timesyncd"
+ubtu24cis_time_pool:
+  - name: pool.ntp.org
+    options: iburst maxsources 4
+ubtu24cis_time_servers:
+  - name: 0.nl.pool.ntp.org
+    options: iburst
+  - name: 1.nl.pool.ntp.org
+    options: iburst
+  - name: 2.nl.pool.ntp.org
+    options: iburst
+ubtu24cis_cron_allow_users: []
+ubtu24cis_ipv6_disable: grub
+ubtu24cis_ufw_allow_out_ports:
+  - port: 53
+    proto: tcp
+  - port: 53
+    proto: udp
+  - port: 80
+    proto: tcp
+  - port: 123
+    proto: udp
+  - port: 443
+    proto: tcp
+ubtu24cis_sshd_log_level: "INFO"
+ubtu24cis_sshd_allow_users: ""
+ubtu24cis_sshd_allow_groups: ""
+ubtu24cis_remote_log_server: 192.168.2.100
+ubtu24cis_logrotate_pkg_install: true
+ubtu24cis_logrotate: "daily"
+ubtu24cis_auditd_disk_full_action: halt
+ubtu24cis_auditd_disk_error_action: syslog
