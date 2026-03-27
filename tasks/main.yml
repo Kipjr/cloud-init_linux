@@ -6,7 +6,7 @@
     dest: "/tmp/ansible_facts_{{ inventory_hostname }}.json"
 
 - name: Flatten hostvars and put into facts
-  set_fact:
+  ansible.builtin.set_fact:
     "{{ item.key }}": "{{ item.value }}"
   loop: "{{ hostvars[inventory_hostname]['all']['hosts']['localhost'] | dict2items }}"
 
